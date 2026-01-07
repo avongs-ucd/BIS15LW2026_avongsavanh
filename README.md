@@ -1,4 +1,5 @@
 # BIS15L_W26_avongsav
+*Note this is a copypaste from a previous attempt of the assignment
 
 This is definitely not the course page for BIS 015L, Data Science for Biologists at UC Davis. 
 
