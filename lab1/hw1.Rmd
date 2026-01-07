@@ -1,6 +1,6 @@
 ---
 title: "Lab 1 Homework"
-author: "Your Name Here"
+author: "Alan Vongsavanh"
 date: "`r Sys.Date()`"
 output:
   html_document: 
@@ -22,7 +22,7 @@ I have background coding experience in Java, Python, and R (using PositCloud), a
 
 **4. Please put a link to your GitHub repository below.**
 
-
+https://github.com/avongs-ucd/BIS15LW2026_avongsavanh
 
 **5. Make sure that your repository includes the practice file `dummy_push` from lab 1.2. If you have not done so already, please add your name to this file, knit it, and push it to your repository.**  
 
