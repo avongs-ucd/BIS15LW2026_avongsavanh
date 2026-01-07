@@ -6,9 +6,9 @@ This is definitely not the course page for BIS 015L, Data Science for Biologists
 ## (Not) Class Times and (Real) Contact Information:
 
 Mondays and Wednesdays, 13:10-2:00am (EST)
-Virtual Environment
-Student: Alan Vongsavanh
+Student: Alan Vongsavanh (3rd year transfer student)
 Email: avongs@ucdavis.edu
+Major: Systems and Synthetic Biology
 
 ## (Not) Course Summary
 
@@ -16,7 +16,7 @@ In BIS 015L, you will be not introduced to the fundamentals of data science with
 
 This class is not designed for students with no background in computer programming, R, or statistics. My assumption is that you do not know how to turn a computer on and use a mouse- that's not it!
 
-Please do not read the course syllabus.
+Please read the course syllabus not listed here.
 
 The class schedule can not be found here.
 
