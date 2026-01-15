@@ -26,22 +26,25 @@ glimpse(msleep)
 **2. What are the names of the variables? To get a better idea of what the variables mean, you can use `?msleep`.**
 ```{r}
 ?msleep
+names(msleep)
 ```
 
 **3. Make a plot that shows the number of mammals in each vore type. Which vore type is most represented in the data?**
 ```{r}
 ggplot(data = msleep,
-      mapping = aes(x = )
+      mapping = aes(x = vore)) + 
+      geom_bar(mapping = aes(fill = vore))
 ```
 
 **4. What is the average length of time that each mammal sleeps?**
 ```{r}
-
+sleep_average = mean(msleep$sleep_total)
+sleep_average
 ```
 
 **5. Use `summary()` to get a quick idea of the range of values for the variable `bodywt`.**
 ```{r}
-
+summary(msleep$bodywt)
 ```
 
 **6. Build a plot that shows the range of `bodywt.` by vore type. Because the range of `bodywt` is so variable, you will need to scale the y-axis. You do this by adding `scale_y_log10()` as another layer.**

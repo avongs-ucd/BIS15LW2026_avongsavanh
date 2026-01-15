@@ -170,7 +170,7 @@ names(penguins)
 ggplot(data=penguins, 
        mapping = aes(x = bill_length_mm,y = bill_depth_mm)) +
   geom_point(mapping = aes(color = species, shape = species),na.rm = T) +
-  geom_smooth(method = lm, se = T, na.rm = T) +
+  geom_smooth(method = lm, se = F, na.rm = T) +
   labs(title = "Bill Length (mm) vs. Bill Depth (mm)",
       x = "Bill Length (mm)",
       y = "Bill Depth (mm)")
@@ -179,16 +179,21 @@ ggplot(data=penguins,
 ### Bar Plot: `geom_bar()`
 The simplest type of bar plot counts the number of observations in a categorical variable. In this case, we want to know how many observations are present in the variable `species`. Notice that we do not specify a y-axis because it is count by default.  
 ```{r}
-
+names(penguins)
 ```
 
+How many individuals per species?
 ```{r}
-
+ggplot(data=penguins, 
+       mapping = aes(x = species)) + 
+    geom_bar(mapping = aes(x = species))
 ```
 
 What if we want to use the color aesthetic like we did for `geom_point` above? Let's try...
 ```{r}
-
+ggplot(data=penguins, 
+       mapping = aes(x = species)) + 
+    geom_bar(mapping = aes(fill = species))
 ```
 
 This doesn't work because the color aesthetic is being applied to the bars themselves. Instead, we need to use `fill` to color the inside of the bars.
@@ -199,16 +204,21 @@ This doesn't work because the color aesthetic is being applied to the bars thems
 ## Practice
 1. Make a bar plot showing the number of penguins on each island.
 ```{r}
-
+names(penguins)
 ```
 
 ```{r}
-
+ggplot(data=penguins, 
+       mapping = aes(x = island)) + 
+    geom_bar(mapping = aes(fill = island))
 ```
 
 2. Make a bar plot showing the number of penguins of each species on each island. (Hint: use `fill` to distinguish species)
 ```{r}
-
+ggplot(data=penguins, 
+       mapping = aes(x = island)) + 
+    geom_bar(mapping = aes(fill = species), position = "dodge") + 
+    labs(title = "#Penguins for each species by island")
 ```
 
 ## Wrap-up  
