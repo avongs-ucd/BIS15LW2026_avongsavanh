@@ -67,32 +67,58 @@ homerange %>%
   select(common.name, order, mean.hra.m2, mean.mass.g) %>% 
   filter(mean.hra.m2 >= 1000000) %>%
   arrange(desc(mean.hra.m2)) %>%
-  slice
-
+  slice_max(mean.hra.m2, n = 10)
 ```
 
 **6. Which two species have the largest and smallest homerange sizes?**
 ```{r}
-
+homerange %>%
+  select(common.name, order, mean.hra.m2, mean.mass.g) %>% 
+  arrange(desc(mean.hra.m2)) %>%
+  slice_max(mean.hra.m2, n = 1)
 ```
 
 ```{r}
-
+homerange %>%
+  select(common.name, order, mean.hra.m2, mean.mass.g) %>% 
+  arrange(mean.hra.m2) %>%
+  slice_min(mean.hra.m2, n = 1)
 ```
 
 **7. Which carnivorous mammals have the largest homeranges?**
 ```{r}
-
+homerange %>%
+  select(common.name, order, mean.hra.m2, mean.mass.g, trophic.guild) %>% 
+  filter(trophic.guild == "carnivore") %>%
+  arrange(desc(mean.hra.m2))
 ```
 
 **8. Is there a relationship between body mass and homerange size? Make a scatterplot to show this relationship. Be sure to include appropriate labels and a title.**
 ```{r}
-
+ggplot(data = homerange,
+      mapping = aes(x = mean.mass.g,y = mean.hra.m2)) + 
+      geom_point(mapping = aes(color = trophic.guild)) + 
+      geom_smooth(method = lm, se = F, na.rm = T) +
+      scale_x_log10() +
+      scale_y_log10() + 
+      labs(title = "Body Mass (g) vs. Homerange Size (m^2)",
+       x = "Body Mass (g)",
+       y = "Homerange Size (m^2)")
 ```
 
 **9. Use filter to extract the data for only birds and mammals. Then make a plot that compares the homerange sizes of these two groups. Be sure to include appropriate labels and a title.**
 ```{r}
 
+
+ggplot(data = homerange,
+      mapping = aes(x = mean.mass.g,y = mean.hra.m2)) + 
+      geom_point(mapping = aes(color = trophic.guild)) + 
+      geom_smooth(method = lm, se = F, na.rm = T) +
+      scale_x_log10() +
+      scale_y_log10() + 
+      labs(title = "Body Mass (g) vs. Homerange Size (m^2)",
+       x = "Body Mass (g)",
+       y = "Homerange Size (m^2)")
 ```
 
 **10. Do one additional exploratory analysis of your choice. Before writing the code, write the question you are trying to answer. The question should be biologically meaningful and appropriate for the data. It must include at least one `filter()`, `select()`, and `arrange()`.**
