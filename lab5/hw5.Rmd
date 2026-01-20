@@ -108,9 +108,9 @@ ggplot(data = homerange,
 
 **9. Use filter to extract the data for only birds and mammals. Then make a plot that compares the homerange sizes of these two groups. Be sure to include appropriate labels and a title.**
 ```{r}
+homerangebm = filter(homerange, species == "bird" | species == "mammal")
 
-
-ggplot(data = homerange,
+ggplot(data = homerangebm,
       mapping = aes(x = mean.mass.g,y = mean.hra.m2)) + 
       geom_point(mapping = aes(color = trophic.guild)) + 
       geom_smooth(method = lm, se = F, na.rm = T) +
@@ -122,6 +122,8 @@ ggplot(data = homerange,
 ```
 
 **10. Do one additional exploratory analysis of your choice. Before writing the code, write the question you are trying to answer. The question should be biologically meaningful and appropriate for the data. It must include at least one `filter()`, `select()`, and `arrange()`.**
+The question I am trying to answer is what 
+
 ```{r}
 
 ```
