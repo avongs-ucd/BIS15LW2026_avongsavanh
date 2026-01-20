@@ -32,40 +32,44 @@ In the previous lab, we used `select()` to extract columns of interest from a da
 ## `filter()`
 Unlike `select()`, `filter()` allows us to extract data that meet specific criteria within a row. Let's say that we are interested only in the Adelie penguins from the `penguins` data frame. We can use `filter()` to extract these observations.  
 ```{r}
-
+glimpse(penguins)
 ```
+```{r}
+filter(penguins, species == "Adelie")
+```
+
 
 Similarly, if we are only interested in penguins with a body mass greater than or equal to 5500g we can use `filter()` to extract these observations.  
 ```{r}
-
+filter(penguins, body_mass_g >= 5500)
 ```
 
 + `filter()` allows all of the expected operators; i.e. >, >=, <, <=, != (not equal), and == (equal).  
 
 Using the `!` operator allows for the exclusion of specific observations.
 ```{r}
-
+filter(penguins, species!= "Chinstrap")
 ```
 
 ## Using `filter()` with multiple observations  
 The `%in%` [operator](https://www.tutorialspoint.com/r/r_operators.htm) determines whether or not a value is part of a vector.    
 ```{r}
-
+filter(penguins, body_mass_g %in% c(5250,5500))
 ```
 
 Alternatively, you can use `between` if you are looking for a range of specific values.  
 ```{r}
-
+filter(penguins, between(body_mass_g, 5250, 5500))
 ```
 
 How would you use `%in%` to get the same result?
 ```{r}
-
+filter(penguins, body_mass_g %in% c(5250:5500)) # or c(5250, 5300, 5350, 5400, 5450, 5500) if you know those are the other values
 ```
 
 You can also extract observations "near" a certain value but you need to specify a tolerance.  
 ```{r}
-
+filter(penguins, near(body_mass_g, 5400, tol = 100))
 ```
 
 ## Practice
@@ -73,38 +77,49 @@ The data are from: Gaeta J., G. Sass, S. Carpenter. 2012. Biocomplexity at North
 
 1. Load the data
 ```{r}
-
+fish <- read.csv("data/Gaeta_etal_CLC_data.csv")
+fish
 ```
 
 2. Filter the `fish` data to include the samples from lake "BO".
 ```{r}
+names(fish)
+```
 
+
+```{r}
+filter(fish,lakeid == "BO")
 ```
 
 3. Filter the data to include all lakes except "AR".
 ```{r}
-
+filter(fish,lakeid != "AR")
 ```
 
 4. Filter the fish data to include all fish with a scalelength within 0.25 of 8.
 ```{r}
-
+filter(fish, near(scalelength, 8, tol = 0.25))
 ```
 
 5. Filter the fish data to include fish with a scalelength between 2 and 4.
 ```{r}
-
+filter(fish, between(scalelength, 2, 4))
 ```
 
 ## Using `filter()` on multiple conditions
 You can also use `filter()` to extract data based on multiple conditions. Below we extract the Chinstrap penguins that have a body mass greater than 4500g.
 ```{r}
+names(penguins)
+```
 
+
+```{r}
+filter(penguins, species == "Chinstrap", body_mass_g >= 4500)
 ```
 
 Notice that the `|` operator generates a different result. Why?
 ```{r}
-
+filter(penguins, species == "Chinstrap" | body_mass_g >= 4500) # | is an "OR" so as long as one condition is fulfilled it will be included
 ```
 
 Rules:  
@@ -114,7 +129,7 @@ Rules:
 
 In this case, we filter out the penguins with a body mass over 5000g and a bill length over 50mm or a bill depth over 18mm.
 ```{r}
-
+filter(penguins, , body_mass_g >= 5000, bill_length_mm >= 50 | bill_depth_mm >= 18)
 ```
 
 ## Pipes `%>%` 
