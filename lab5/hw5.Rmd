@@ -90,7 +90,8 @@ homerange %>%
 homerange %>%
   select(common.name, order, mean.hra.m2, mean.mass.g, trophic.guild) %>% 
   filter(trophic.guild == "carnivore") %>%
-  arrange(desc(mean.hra.m2))
+  arrange(desc(mean.hra.m2)) %>%
+  slice_max(mean.hra.m2, n = 10)
 ```
 
 **8. Is there a relationship between body mass and homerange size? Make a scatterplot to show this relationship. Be sure to include appropriate labels and a title.**
@@ -127,7 +128,9 @@ The question I am trying to answer is out of all of the bird species in the data
 homerange %>%
   select(common.name, taxon, order, family, trophic.guild, mean.mass.g, mean.hra.m2) %>% 
   filter(taxon == "birds") %>%
-  arrange(desc(mean.hra.m2))
+  arrange(desc(mean.hra.m2)) %>%
+  slice_max(mean.hra.m2, n = 10)
+  
 
 homerangeb = filter(homerange, taxon == "birds")
 ggplot(data = homerangeb,
