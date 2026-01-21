@@ -105,27 +105,38 @@ ggplot(data = homerange,
        x = "Body Mass (g)",
        y = "Homerange Size (m^2)")
 ```
+There is a relationship between body mass and homerange size.
 
 **9. Use filter to extract the data for only birds and mammals. Then make a plot that compares the homerange sizes of these two groups. Be sure to include appropriate labels and a title.**
 ```{r}
 homerangebm = filter(homerange, taxon == "birds" | taxon == "mammals")
 
 ggplot(data = homerangebm,
-      mapping = aes(y = mean.hra.m2)) + 
+      mapping = aes(x = taxon, y = mean.hra.m2)) + 
       geom_boxplot(mapping = aes(fill = taxon)) +
       scale_y_log10() + 
-      labs(title = "Taxon vs. Mean Homerange Size",
+      labs(title = "Taxon vs. Mean Homerange Size (m^2)",
        x = "Taxon",
-       y = "Mean Homerange Size")
-      
-
+       y = "Mean Homerange Size (m^2)")
 ```
 
 **10. Do one additional exploratory analysis of your choice. Before writing the code, write the question you are trying to answer. The question should be biologically meaningful and appropriate for the data. It must include at least one `filter()`, `select()`, and `arrange()`.**
-The question I am trying to answer is what 
+The question I am trying to answer is out of all of the bird species in the data, do carnivores have a larger homerange size than herbivores?
 
 ```{r}
+homerange %>%
+  select(common.name, taxon, order, family, trophic.guild, mean.mass.g, mean.hra.m2) %>% 
+  filter(taxon == "birds") %>%
+  arrange(desc(mean.hra.m2))
 
+homerangeb = filter(homerange, taxon == "birds")
+ggplot(data = homerangeb,
+      mapping = aes(x = trophic.guild, y = mean.hra.m2)) + 
+      geom_boxplot(mapping = aes(fill = trophic.guild)) +
+      scale_y_log10() + 
+      labs(title = "Trophic Guild vs. Mean Homerange Size (m^2)",
+       x = "Trophic Guild",
+       y = "Mean Homerange Size (m^2)")
 ```
 
 ## Knit and Upload
