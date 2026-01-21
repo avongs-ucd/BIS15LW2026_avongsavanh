@@ -108,17 +108,17 @@ ggplot(data = homerange,
 
 **9. Use filter to extract the data for only birds and mammals. Then make a plot that compares the homerange sizes of these two groups. Be sure to include appropriate labels and a title.**
 ```{r}
-homerangebm = filter(homerange, species == "bird" | species == "mammal")
+homerangebm = filter(homerange, taxon == "birds" | taxon == "mammals")
 
 ggplot(data = homerangebm,
-      mapping = aes(x = mean.mass.g,y = mean.hra.m2)) + 
-      geom_point(mapping = aes(color = trophic.guild)) + 
-      geom_smooth(method = lm, se = F, na.rm = T) +
-      scale_x_log10() +
+      mapping = aes(y = mean.hra.m2)) + 
+      geom_boxplot(mapping = aes(fill = taxon)) +
       scale_y_log10() + 
-      labs(title = "Body Mass (g) vs. Homerange Size (m^2)",
-       x = "Body Mass (g)",
-       y = "Homerange Size (m^2)")
+      labs(title = "Taxon vs. Mean Homerange Size",
+       x = "Taxon",
+       y = "Mean Homerange Size")
+      
+
 ```
 
 **10. Do one additional exploratory analysis of your choice. Before writing the code, write the question you are trying to answer. The question should be biologically meaningful and appropriate for the data. It must include at least one `filter()`, `select()`, and `arrange()`.**
