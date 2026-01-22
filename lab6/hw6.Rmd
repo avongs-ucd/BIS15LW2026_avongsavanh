@@ -30,11 +30,9 @@ gabon <- read.csv("data/IvindoData_DryadVersion.csv")
 ```{r}
 glimpse(gabon)
 ```
+
 ```{r}
 summary(gabon)
-```
-```{r}
-gabon
 ```
 
 **3. Clean the data as necessary following the conventions from lab 6.**
@@ -51,49 +49,53 @@ gabon
 **4. Use `mutate()` Change the variables `HuntCat`, `LandUse`, and `TransectID` to factors. Be sure to store the output as a new dataframe and use it for the remaining questions.**
 ```{r}
 gabon <- gabon %>%
- # mutate(c("HuntCat", "LandUse", "TransectID")) %>%
-  mutate(c(hunt_cat, land_use, transect_id)) %>%
- # gabon <- tibble(hunt_cat, land_use, transect_id)
-  select(hunt_cat, land_use, transect_id)
-
-#mutate(across(c(hunt_cat, land_use, transect_id) as.factor))
+  mutate(across(c(hunt_cat, land_use, transect_id), as.factor))
+gabon
 ```
 
 **5. Make a plot that shows the number of transects for each land use type.**
 ```{r}
 gabon %>%
-  ggplot(mapping = aes(x = land_use)
-```
-
-```{r}
-
+  ggplot(mapping = aes(x = transect_id)) +
+    geom_bar(mapping = aes(fill = land_use)) +
+    labs(title = "Number of Transects for Each Land Use Type",
+      x = "Number of Transects",
+      y = "Land Use Type")
 ```
 
 **6. How does vegetation richness compare among land use types?**
 ```{r}
-
+gabon %>%
+  ggplot(mapping = aes(x = veg_rich)) +
+    geom_bar(mapping = aes(fill = land_use)) +
+    labs(title = "Vegetation Richness Among Land Use Types",
+      x = "Vegetation Richness",
+      y = "Land Use Type")
 ```
 
 **7. For which land use type (national parks, logging, or neither) is average all species diversity the greatest?**
 ```{r}
-
+names(gabon)
 ```
 
 ```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
+gabon %>%
+  ggplot(mapping = aes(x = diversity_all_species)) +
+    geom_bar(mapping = aes(fill = land_use)) +
+    labs(title = "Vegetation Richness Among Land Use Types",
+      x = "Vegetation Richness",
+      y = "Land Use Type")
 ```
 
 **8. Is there a relationship between vegetation richness and mammal species richness?**
 ```{r}
-
+gabon %>%
+  ggplot(mapping = aes(x = veg_rich, y = rich_mammal_species)) + 
+    geom_point(mapping = aes(color = land_use)) + 
+    geom_smooth(method = lm, se = F, na.rm = T) +
+    labs(title = "Vegetation Richness vs. Mammal Species Richness",
+      x = "Vegetation Richness",
+      y = "Mammal Species Richness")
 ```
 
 **9. Use `filter` to find all transects that have greater than 15 tree species or a breast height diameter between 50 and 60cm.  **
