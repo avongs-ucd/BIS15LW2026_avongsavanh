@@ -40,9 +40,6 @@ summary(gabon)
 gabon <- gabon %>%
   clean_names() %>%
   mutate(across(where(is.character),tolower)) 
-```
-
-```{r}
 gabon
 ```
 
@@ -100,16 +97,19 @@ gabon %>%
 
 **9. Use `filter` to find all transects that have greater than 15 tree species or a breast height diameter between 50 and 60cm.  **
 ```{r}
-
+gabon %>%
+  filter(transect_id >= 15 | between(breastheightdiameter, 50, 60))
 ```
 
 ```{r}
-
+names(gabon)
 ```
 
 **10.Which transects and land use types have more than 10 tree species and 10 mammal species? Use `arrange()` to sort by the number of tree species.**
 ```{r}
-
+gabon %>%
+  filter(treespecies >= 10 | diversity_mammal_species >= 10) %>%
+  arrange(veg_stems)
 ```
 
 ## Knit and Upload
