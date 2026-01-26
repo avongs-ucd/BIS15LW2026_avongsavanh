@@ -39,15 +39,13 @@ summary(gabon)
 ```{r}
 gabon <- gabon %>%
   clean_names() %>%
-  mutate(across(where(is.character),tolower)) 
-gabon
+  mutate(across(where(is.character),tolower))  
 ```
 
 **4. Use `mutate()` Change the variables `HuntCat`, `LandUse`, and `TransectID` to factors. Be sure to store the output as a new dataframe and use it for the remaining questions.**
 ```{r}
 gabon <- gabon %>%
   mutate(across(c(hunt_cat, land_use, transect_id), as.factor))
-gabon
 ```
 
 **5. Make a plot that shows the number of transects for each land use type.**
