@@ -44,6 +44,7 @@ elephants <- elephants %>%
 ```{r}
 glimpse(elephants)
 ```
+
 ```{r}
 summary(elephants)
 ```
@@ -139,7 +140,7 @@ elephants %>%
   ggplot(mapping = aes(x = years_of_sample_collection, y = tusk_length_in_cm)) +
   geom_boxplot(mapping = aes(color = years_of_sample_collection)) + 
   labs(title = "Time Period vs. Tusk Length (cm)",
-      x = "Time Period",
+      x = "Time Period", 
       y = "Tusk Length (cm)")
 ```
 The data does support that because poachers preferentially target elephants with large tusks, this has resulted in a decrease in average tusk length
@@ -161,7 +162,7 @@ elephants %>%
 ```
 
 ```{r}
-elephants %>%
+elephants %>% 
   filter((sex == "m" & estimated_age_years >= 25) | (sex == "f" & estimated_age_years >= 12)) %>%
   ggplot(mapping = aes(x = years_of_sample_collection, y = tusk_length_in_cm)) +
   geom_boxplot(mapping = aes(color = sex)) + 
