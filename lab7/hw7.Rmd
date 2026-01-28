@@ -146,6 +146,23 @@ elephants %>%
 The data does support that because poachers preferentially target elephants with large tusks, this has resulted in a decrease in average tusk length
 
 ```{r}
+elephants %>%
+    filter(years_of_sample_collection == "1966-68") %>%
+  summarize(mean_tusk_length = mean(tusk_length_in_cm, na.rm = T), 
+            min_tusk_length = min(tusk_length_in_cm, na.rm = T),
+            max_tusk_length = max(tusk_length_in_cm, na.rm = T),
+            total = n()) 
+```
+```{r}
+elephants %>%
+    filter(years_of_sample_collection == "2005-13") %>%
+  summarize(mean_tusk_length = mean(tusk_length_in_cm, na.rm = T), 
+            min_tusk_length = min(tusk_length_in_cm, na.rm = T),
+            max_tusk_length = max(tusk_length_in_cm, na.rm = T),
+            total = n()) 
+```
+
+```{r}
 names(elephants)
 ```
 
