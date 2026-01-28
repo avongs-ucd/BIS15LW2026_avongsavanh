@@ -80,6 +80,7 @@ elephants %>%
   summarize(mean_age_m = mean(estimated_age_years, na.rm = T), 
             min_age_m = min(estimated_age_years, na.rm = T),
             max_age_m = max(estimated_age_years, na.rm = T),
+            sd_age_m = sd(estimated_age_years, na.rm = T),
             total = n()) 
 ```
 ```{r}
@@ -89,6 +90,7 @@ elephants %>%
   summarize(mean_age_f = mean(estimated_age_years, na.rm = T), 
             min_age_f = min(estimated_age_years, na.rm = T),
             max_age_f = max(estimated_age_years, na.rm = T),
+            sd_age_f = sd(estimated_age_years, na.rm = T),
             total = n()) 
 ```
 ```{r}
@@ -98,6 +100,7 @@ elephants %>%
   summarize(mean_age_m = mean(estimated_age_years, na.rm = T), 
             min_age_m = min(estimated_age_years, na.rm = T),
             max_age_m = max(estimated_age_years, na.rm = T),
+            sd_age_m = sd(estimated_age_years, na.rm = T),
             total = n()) 
 ```
 ```{r}
@@ -107,6 +110,7 @@ elephants %>%
   summarize(mean_age_f = mean(estimated_age_years, na.rm = T), 
             min_age_f = min(estimated_age_years, na.rm = T),
             max_age_f = max(estimated_age_years, na.rm = T),
+            sd_age_f = sd(estimated_age_years, na.rm = T),
             total = n()) 
 ```
 **9. Is age (independent variable) a positive predictor of tusk length (dependent variable)? Create a plot that shows the relationship between these variables and add a linear model fit line.**  
@@ -141,7 +145,7 @@ elephants %>%
   geom_boxplot(mapping = aes(color = years_of_sample_collection)) + 
   labs(title = "Time Period vs. Tusk Length (cm)",
       x = "Time Period", 
-      y = "Tusk Length (cm)")
+      y = "Tusk Length (cm)") #for this problem, better to not plot and instead use means/max/min/sd 
 ```
 The data does support that because poachers preferentially target elephants with large tusks, this has resulted in a decrease in average tusk length
 
@@ -169,23 +173,17 @@ names(elephants)
 
 **12. Male elephants reach effective sexual maturity at 25 years while females are sexually mature at 12 years. Make a new dataframe that extracts only the males and females at sexual maturity. Then, make a plot that shows the range of tusk length between the two sample periods for these mature elephants.**   
 ```{r}
-elephants %>%
-  filter((sex == "m" & estimated_age_years >= 25) | (sex == "f" & estimated_age_years >= 12)) %>%
-  ggplot(mapping = aes(x = sex, y = tusk_length_in_cm)) +
-  geom_boxplot(mapping = aes(color = sex)) + 
-  labs(title = "Sex vs. Tusk Length (cm) for Elephants at Sexual Maturity",
-      x = "Sex",
-      y = "Tusk Length (cm)")
+elephants_sm <- elephants %>%
+  filter((sex == "m" & estimated_age_years >= 25) | (sex == "f" & estimated_age_years >= 12)) #must be isolated from the code chunk with ggplot for ggplot to utilize the new dataframe created, done to help with pipe management (doesn't mix up piping and ggplot functions)
 ```
 
 ```{r}
-elephants %>% 
-  filter((sex == "m" & estimated_age_years >= 25) | (sex == "f" & estimated_age_years >= 12)) %>%
+elephants_sm %>% 
   ggplot(mapping = aes(x = years_of_sample_collection, y = tusk_length_in_cm)) +
   geom_boxplot(mapping = aes(color = sex)) + 
   labs(title = "Time Period vs. Tusk Length (cm) for Males and Females at Sexual Maturity",
       x = "Time Period",
-      y = "Tusk Length (cm)")
+      y = "Tusk Length (cm)") #just present this graph
 ```
 
 ## Submit the Homework
