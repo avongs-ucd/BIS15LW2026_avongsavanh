@@ -18,7 +18,6 @@ library("tidyverse")
 library("janitor")
 ```
 
-
 Lab 1_1: 
 ## RStudio Layout  
 When you open RStudio, you will see that the window is divided into four sections. Each of these sections has a specific function that we will use throughout the course.  
@@ -210,8 +209,877 @@ x
 mean(x, na.rm = T)
 ```
 
+lab 3_1:
+## Load the tidyverse
+A library is a collection of R functions and data sets. The [tidyverse](https://tidyverse.org/) is a collection of R packages designed for data science. For this course, we will be using many of the packages in the tidyverse. We load the tidyverse with the command below.  
+```{r}
+library("tidyverse") 
+#install.packages("package_name") #command to install packages
+```
+## Data Structures
+In addition to classes of data, R also organizes data in different ways. These are called data structures and include vectors, lists, matrices, data frames, and factors. Here, we will introduce vectors and data frames.  
+## Vectors
+Vectors are a common way of organizing data in R.  We create vectors using the `c` command. The `c` stands for concatenate. We used this command in lab 2.  
+A numeric vector.
+```{r}
+my_vector <- c(10, 20, 30) #this makes a new vector
+```
+A character vector.
+```{r}
+days_of_the_week <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+```
+A convenient trick for creating a vector to play around with is to generate a sequence of numbers.
+```{r}
+my_vector_sequence <- c(1:100)
+my_vector_sequence
+```
+## Identifying vector elements
+We can use `[]` to pull out elements in a vector. We just need to specify their position in the vector; i.e. day 3 is Wednesday.
+```{r}
+days_of_the_week[4]
+```
+```{r}
+my_vector_sequence[10]
+```
+## Practice
+1. Use `[]` to determine which element in `my_vector_sequence` has a value of 15.
+```{r}
+my_vector_sequence[15]
+```
+2. We can use operators such as <, >, ==, <==, etc. Show all values in `my_vector_sequence` that are less than or equal to 10. 
+```{r}
+my_vector_sequence[my_vector_sequence <= 10] #important for dna sequence data 
+```
+3. If you use `[]` then you only get the values, not the logical evaluation of the entire vector. Experiment with this by adjusting the chunk below.    
+```{r}
+my_vector_sequence <= 10
+```
 
+## Data Frames
+The data frame is the most common way to organize data within R. A data frame stores data of many different classes. Essentially, data frames are spreadsheets like you would find in Excel. We usually don't build data frames in RStudio from scratch, but this example will show you how they are structured.  
+Let's build separate vectors that include length (in), weight (oz), and sex of three [ruby-throated hummingbirds](https://www.audubon.org/field-guide/bird/ruby-throated-hummingbird).  
+```{r}
+Sex <- c("male", "female", "male") #character vectors, strings of characters
+Length <- c(3.2, 3.7, 3.4) #integer vectors
+Weight <- c(2.9, 4.0, 3.1)
+```
+Since we work in the tidyverse, we use `tibble()` to create a data frame.  
+```{r}
+hbirds <- tibble(Sex, Length, Weight) #columns referred to as variables
+hbirds 
+```
+What are the column names of our data frame? Notice that R defaulted to using the names of our vectors, but we could name them something else when creating the data frame, or rename them later.  
+```{r}
+names(hbirds)
+```
+What are the dimensions of the `hbirds` data frame? The `dim()` and `str()` commands provide this information.   
+```{r}
+dim(hbirds)
+```
+```{r}
+str(hbirds) #str stands for structures
+```
+Let's use lowercase names when we create the data frame. We just changed to lowercase here, but we could use any names we wish.  
+```{r}
+hbirds <- tibble(sex = Sex, length = Length, weight = Weight)
+hbirds
+```
+## Accessing Data Frame Columns and Rows 
+The same methods of selecting elements in vectors and data matrices apply to data frames. We use `[]`. We have two positions where the first applies to the rows, and the second to the columns.  
+The first row.  
+```{r}
+hbirds[1,]
+```
+The third column.  
+```{r}
+hbirds[3] #using hbirds[,3] also works
+```
+```{r}
+hbirds[1,3] #row, column
+```
+## Calculations
+We can use the `$` to access a column (variable) in a data frame. Here we calculate the mean length of the hummingbirds.  
+```{r}
+hbirdsmean <- mean(hbirds$length)
+hbirdsmean
+```
+## Writing Data to File
+We should save our hbirds data frame so we can use it again later! There are many ways to save data in R, here we write our data frame to a csv file. We use `row.names = FALSE` to avoid row numbers from printing out (on the first row when opened on a spreadsheet)
+```{r}
+#write.csv(hbirds, "hbirds_data.csv", row.names = FALSE) 
+```
 
+lab 3_2:
+## Change column classes
+When making plots or performing statistical modeling, it may be important to convert column classes. For example, if a column contains categorical data (e.g., scientist names, treatment groups, etc.) it may be best to convert that column to a factor class.  
+Recall that factors are categorical variables that have a fixed number of possible values called levels.  
+What is the class of the scientist column? Let's change it to factor and then show the levels of that factor.  
+```{r}
+names(hot_springs)
+```
+```{r}
+class(hot_springs$scientist)
+```
+Did our change work? We can also check the levels of each column.
+```{r}
+hot_springs$scientist <- as.factor(hot_springs$scientist)
+```
+```{r}
+class(hot_springs$scientist)
+```
+## Practice
+1. Change the class of the springs column to factor.
+```{r}
+hot_springs$spring <- as.factor(hot_springs$spring)
+```
+2. What are the levels of the springs column?
+```{r}
+levels(hot_springs$spring)
+```
+```{r}
+table(hot_springs$spring)
+```
+We can summarize our data frame with the`summary()` function.  (uses fish <- (another csv file))
+```{r}
+names(fish)
+```
+```{r}
+str(fish)
+```
+```{r}
+summary(fish)
+```
+`glimpse()` is another useful summary function.
+```{r}
+glimpse(fish)
+```
+`nrow()` gives the numbers of rows.
+```{r}
+nrow(fish)
+```
+`ncol` gives the number of columns.
+```{r}
+ncol(fish)
+```
+`dim()` gives the dimensions.
+```{r}
+dim(fish)
+```
+`names` gives the column names.
+```{r}
+names(fish)
+```
+`head()` prints the first n rows of the data frame.
+```{r}
+head(fish)
+```
+`tail()` prinst the last n rows of the data frame.
+```{r}
+tail(fish)
+```
+`table()` is useful when you have a limited number of categorical variables. It produces fast counts of the number of observations in a variable.
+```{r}
+table(fish$fish_id)
+```
 
+hw3 not included
+
+lab4: 
+## Libraries
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+```
+## Grammar of Graphics
+The ability to quickly produce and customize graphs is a strength of R. Data visualizations are produced by the package `ggplot2` and it is a core part of the tidyverse. The syntax for using ggplot is specific and common to all types of plots. This is what Hadley Wickham calls a [Grammar of Graphics](http://vita.had.co.nz/papers/layered-grammar.pdf). The "gg" in `ggplot` stands for grammar of graphics.
+
+## Philosophy
+What makes a good chart? In my opinion a good chart is elegant in its simplicity. It provides a clean, clear visual of the data without being overwhelming to the reader. This can be hard to do and takes some careful thinking. Always keep in mind that the reader will almost never know the data as well as you do so you need to be mindful about how you present the facts.  
+
+## Data Types
+We first need to define some of the data types we will use to build plots.  
+
++ `discrete` quantitative data that only contains integers
++ `continuous` quantitative data that can take any numerical value (like weight, height)
++ `categorical` qualitative data that can take on a limited number of values 
+
+## Basics
+The syntax used by ggplot takes some practice to get used to, especially for customizing plots, but the basic elements are the same. It is helpful to think of plots as being built up in layers.  
+
+In short, **plot= data + geom_ + aesthetics**.  
+
+We start by calling the ggplot function, identifying the data, and specifying the axes. We then add the `geom` type to describe how we want our data represented. Each `geom_` works with specific types of data and R is capable of building plots of single variables, multiple variables, and even maps. Lastly, we add aesthetics.
+Let's start by asking the question: How does body mass vary among penguin species?
+
+To make a plot, we need to first specify the data and map the aesthetics. The aesthetics include how each variable in our data set will be used. In the example below, I am using the aes() function to identify the x and y variables in the plot.
+```{r}
+ggplot(data=penguins, #specifies the data
+       mapping = aes(x = species,y = body_mass_g)) #map the aesthetics
+```
+
+Notice that we have a nice background, labeled axes, and even a value range of our variables on the y-axis- but no plot. This is because we need to tell ggplot how we want our data represented. This is called the geometry or `geom()`. There are many types of `geom`, see the ggplot [cheatsheet](https://posit.co/resources/cheatsheets/).
+
+Here we want a boxplot, specified by `geom_boxplot()`. We will explore boxplots in more detail later, but for now we just need an example.
+```{r}
+ggplot(data=penguins, #specifies the data
+       mapping = aes(x = species,y = body_mass_g)) + #map the aesthetics, note the plus sign
+  geom_boxplot()
+```
+## Scatterplots and barplots
+Now that we have a general idea of the syntax, let's explore two common plots: 1) scatter plots and 2) bar plots.
+
+### 1. Scatter Plots
+Scatter plots are good at revealing relationships that are not readily visible in the raw data.   
+Let's ask the question: Is there a relationship between body mass and flipper length?
+```{r}
+names(penguins)
+```
+```{r}
+ggplot(data=penguins, 
+       mapping = aes(x = body_mass_g,y = flipper_length_mm)) +
+  geom_point()
+```
+Notice the warning! R is telling us that there are some missing values in our data. This is common in real world data sets. R automatically omits these missing values when plotting. We can also deal with the NA's explicitly using the `na.rm=T` function.  
+```{r}
+ggplot(data=penguins, 
+       mapping = aes(x = body_mass_g,y = flipper_length_mm)) +
+  geom_point(na.rm = T)
+```
+To add a regression (best of fit) line, we add another layer.
+```{r}
+ggplot(data=penguins, 
+       mapping = aes(x = body_mass_g,y = flipper_length_mm)) +
+  geom_point( na.rm = T) +
+  geom_smooth(method = lm, se = T,  na.rm = T) #linear model, se = standard error
+```
+This graph is fine, but it doesn't distinguish between species. It might be helpful for the reader to see how each species is represented. We can do this by mapping the color aesthetic to species.
+```{r}
+ggplot(data=penguins, 
+       mapping = aes(x = body_mass_g,y = flipper_length_mm, color = species)) +
+  geom_point(na.rm = T) +
+  geom_smooth(method = lm, se = T, na.rm = T) #linear model, se = standard error
+```
+The plot above looks good, but I think it's a bit messy having the regression line presented for each species. When we add the color aesthetic, it is passed down to all layers. To fix this, we can move the color aesthetic to just the geom_point layer.
+```{r}
+ggplot(data=penguins, 
+       mapping = aes(x = body_mass_g,y = flipper_length_mm)) +
+  geom_point(mapping = aes(color = species),na.rm = T) +
+  geom_smooth(method = lm, se = T, na.rm = T)
+```
+Another helpful aesthetic is `shape` which can be used to distinguish points by shape instead of or in addition to color. A common approach is to map both color and shape to the same variable.
+```{r}
+ggplot(data=penguins, 
+       mapping = aes(x = body_mass_g,y = flipper_length_mm)) +
+  geom_point(mapping = aes(color = species, shape = species),na.rm = T) +
+  geom_smooth(method = lm, se = T, na.rm = T)
+```
+```{r}
+ggplot(data=penguins, 
+       mapping = aes(x = body_mass_g,y = flipper_length_mm)) +
+  geom_point(mapping = aes(color = bill_depth_mm, shape = species),na.rm = T) + #color for continuous example, not recommended for visuals
+  geom_smooth(method = lm, se = T, na.rm = T)
+```
+But don't we want a title? We do this using the `labs()` function.
+```{r}
+ggplot(data=penguins, 
+       mapping = aes(x = body_mass_g,y = flipper_length_mm)) +
+  geom_point(mapping = aes(color = species, shape = species),na.rm = T) +
+  geom_smooth(method = lm, se = T, na.rm = T) + 
+  labs(title = "Body Mass (g) vs. Flipper Length (mm)",
+       x = "Body Mass (g)",
+       y = "Flipper Length (mm)") #labs stands for title
+```
+### Bar Plot: `geom_bar()`
+The simplest type of bar plot counts the number of observations in a categorical variable. In this case, we want to know how many observations are present in the variable `species`. Notice that we do not specify a y-axis because it is count by default.  
+```{r}
+names(penguins)
+```
+How many individuals per species?
+```{r}
+ggplot(data=penguins, 
+       mapping = aes(x = species)) + 
+    geom_bar(mapping = aes(x = species))
+```
+What if we want to use the color aesthetic like we did for `geom_point` above? Let's try...
+```{r}
+ggplot(data=penguins, 
+       mapping = aes(x = species)) + 
+    geom_bar(mapping = aes(fill = species))
+```
+## Practice
+1. Make a bar plot showing the number of penguins on each island.
+```{r}
+ggplot(data=penguins, 
+       mapping = aes(x = island)) + 
+    geom_bar(mapping = aes(fill = island))
+```
+2. Make a bar plot showing the number of penguins of each species on each island. (Hint: use `fill` to distinguish species)
+```{r}
+ggplot(data=penguins, 
+       mapping = aes(x = island)) + 
+    geom_bar(mapping = aes(fill = species), position = "dodge") + 
+    labs(title = "#Penguins for each species by island")
+```
+
+hw4:
+## Load the tidyverse
+```{r}
+library("tidyverse")
+options(scipen = 999) #disable scientific notation
+```
+For this homework, we will be using the `msleep` dataset from the `ggplot2` package. This dataset contains information about the sleep habits of various mammals. [Reference](https://ggplot2.tidyverse.org/reference/msleep.html): V. M. Savage and G. B. West. A quantitative, theoretical framework for understanding mammalian sleep. Proceedings of the National Academy of Sciences, 104 (3):1051-1056, 2007.
+```{r}
+msleep <- msleep
+```
+**1. Use a summary function of your choice to get an idea of the structure of the msleep data.**
+```{r}
+glimpse(msleep)
+```
+**2. What are the names of the variables? To get a better idea of what the variables mean, you can use `?msleep`.**
+```{r}
+?msleep
+names(msleep)
+```
+**3. Make a plot that shows the number of mammals in each vore type. Which vore type is most represented in the data?**
+```{r}
+ggplot(data = msleep,
+      mapping = aes(x = vore)) + 
+      geom_bar(mapping = aes(fill = vore)) +
+      labs(title = "Number of Mammals In Each Vore Type",
+       x = "Vore Type",
+       y = "Number of Mammals")
+```
+The herbi vore type is most represented by the data.
+**4. What is the average length of time that mammals sleep?**
+```{r}
+sleep_average = mean(msleep$sleep_total)
+sleep_average
+```
+The average length of time that mammals sleep is 10.43373 hours.
+**5. Use `summary()` to get a quick idea of the range of values for the variable `bodywt`.**
+```{r}
+summary(msleep$bodywt)
+```
+**6. Build a plot that shows the range of `bodywt.` by vore type. Because the range of `bodywt` is so variable, you will need to scale the y-axis. You do this by adding `scale_y_log10()` as another layer.**
+```{r}
+ggplot(data = msleep,
+      mapping = aes(x = vore,y = bodywt)) + 
+      geom_boxplot(mapping = aes(fill = vore)) +
+      scale_y_log10() + 
+      labs(title = "Vore Type vs. Bodyweight (kg)",
+       x = "Vore Type",
+       y = "Bodyweight (kg)")
+```
+**7. Is there a relationship between body weight and total sleep time? Add appropriate labels and a title to your plot.**
+```{r}
+ggplot(data = msleep,
+      mapping = aes(x = bodywt,y = sleep_total)) + 
+      geom_point(mapping = aes(color = vore)) + #color instead of fill for dots 
+      geom_smooth(method = lm, se = F, na.rm = T) +
+      scale_x_log10() + 
+      labs(title = "Bodyweight (kg) vs. Total Sleep Time (hr)",
+       x = "Bodyweight (kg)",
+       y = "Total Sleep Time (hr)")
+```
+There is a relationship between bodyweight and total sleep time.
+**8. Which vore type tends to sleep the most? Build a plot to support your answer.**
+```{r}
+ggplot(data = msleep,
+      mapping = aes(x = vore,y = sleep_total)) + 
+      geom_boxplot(mapping = aes(fill = vore)) +
+      labs(title = "Vore Type vs. Total Sleep Time (hr)",
+       x = "Vore Type",
+       y = "Total Sleep Time (hr)")
+```
+The insecti vore type tends to sleep the most. 
+**9. Is there a relationship between brain weight and body weight? Build a plot to support your answer.**
+```{r}
+ggplot(data = msleep,
+      mapping = aes(x = brainwt,y = bodywt)) + 
+      geom_point(mapping = aes(color = vore)) +
+      geom_smooth(method = lm, se = F, na.rm = T) +
+      scale_y_log10() + 
+      scale_x_log10() + 
+      labs(title = "Brain Weight (kg) vs. Body Weight (kg)",
+       x = "Brain Weight (kg)",
+       y = "Body Weight (kg)")
+```
+There is a relationship between brain weight and body weight.
+**10. Build one plot of your choice that provides additional insight into the msleep dataset. Be sure to include appropriate labels and a title.**
+```{r}
+ggplot(data = msleep,
+      mapping = aes(x = conservation,y = awake)) + 
+      geom_boxplot(mapping = aes(fill = vore)) +
+      labs(title = "Conservation Type vs. Time Awake (hr)",
+       x = "Conservation Type",
+       y = "Time Awake (hr)")
+```
+
+lab 5_1: ## Tidyverse
+Recall that the [tidyverse](www.tidyverse.org) is a collection of packages that make workflow in R easier. The packages operate more intuitively than base R commands and share a common organizational philosophy. In lab 4, we learned how to use `ggplot2` to make visualization of data easier. In this lab, we will learn how to use the package `dplyr` to wrangle data. 
+## dplyr
+The first package that we will use to wrangle data is `dplyr`. `dplyr` is used to transform data frames by extracting, rearranging, and summarizing data such that they are focused on a question of interest. This is very helpful,  especially when wrangling large data, and makes dplyr one of most frequently used packages in the tidyverse. The two functions we will use most are `select()` and `filter()`.  
+These functions are often called verbs, and the format used for each is the same. The output is always a new, more restricted dataframe.  
+## `select()`
+The verb `select()` allows you to pull out columns of interest from a dataframe; it does not affect the rows. To do this, just add the names of the columns of interest to the `select()` command. The order in which you add them, will determine the order in which they appear in the output.  
+For smaller dataframes, `select()` may not make much sense. However, for larger dataframes with many variables, `select()` is very useful. Let's look at the fish data again.
+```{r}
+names(penguins)
+```
+We are only interested in species and body mass. We can use `select()` to extract these columns.
+```{r}
+select(penguins, species, body_mass_g)
+```
+To add a range of columns use `start_col:end_col`.
+```{r}
+select(penguins, species:flipper_length_mm)
+```
+```{r}
+penguins <- penguins
+penguins
+```
+The ! operator is useful in select. It allows us to select everything except the specified variables. (! is "naught")
+```{r}
+select(penguins, !body_mass_g)
+```
+Alternatively, you can use the `c()` function to exclude multiple columns. (c() is concatenate)
+```{r}
+select(penguins, !c(species, island, year, sex))
+```
+For very large data frames with lots of variables, `select()` utilizes lots of different operators to make things easier. Let's say we are only interested in the variables that deal with length.
+```{r}
+select(penguins,contains("mm"))
+```
+`starts_with()`
+```{r}
+select(penguins,starts_with("bill"))
+```
+`ends_with()`
+```{r}
+select(penguins,ends_with("mm"))
+```
+You can also select columns based on the class of data.  
+```{r}
+select(penguins, where(is.numeric))
+```
+There are a few verbs that go with `select()` because they deal with columns. One of these is `rename()`. `rename()` allows you to rename columns in a dataframe. The format is `new_name = old_name`.
+```{r}
+rename(penguins, body_mass=body_mass_g)
+```
+Alternatively, you can rename from within select.
+```{r}
+select(penguins, species, body_mass=body_mass_g)
+```
+The second is `relocate()`. `relocate()` allows you to move columns to different locations within a dataframe. Let's say we want to move `length` to be the first column in the dataframe.
+```{r}
+relocate(penguins, year)
+```
+
+lab 5_2:
+## Review  
+In the previous lab, we used `select()` to extract columns of interest from a data frame. This helps us focus our attention on the variables relevant to our question. However, it doesn't allow us to extract information in rows. The `filter()` function allows us to extract data in rows that meet specific criteria.  
+## `filter()`
+Unlike `select()`, `filter()` allows us to extract data that meet specific criteria within a row. Let's say that we are interested only in the Adelie penguins from the `penguins` data frame. We can use `filter()` to extract these observations.  
+```{r}
+glimpse(penguins)
+```
+```{r}
+filter(penguins, species == "Adelie")
+```
+Similarly, if we are only interested in penguins with a body mass greater than or equal to 5500g we can use `filter()` to extract these observations.  
+```{r}
+filter(penguins, body_mass_g >= 5500)
+```
++ `filter()` allows all of the expected operators; i.e. >, >=, <, <=, != (not equal), and == (equal).  
+Using the `!` operator allows for the exclusion of specific observations.
+```{r}
+filter(penguins, species!= "Chinstrap")
+```
+## Using `filter()` with multiple observations  
+The `%in%` [operator](https://www.tutorialspoint.com/r/r_operators.htm) determines whether or not a value is part of a vector.    
+```{r}
+filter(penguins, body_mass_g %in% c(5250,5500))
+```
+Alternatively, you can use `between` if you are looking for a range of specific values.  
+```{r}
+filter(penguins, between(body_mass_g, 5250, 5500))
+```
+How would you use `%in%` to get the same result?
+```{r}
+filter(penguins, body_mass_g %in% c(5250:5500)) # or c(5250, 5300, 5350, 5400, 5450, 5500) if you know those are the other values
+```
+You can also extract observations "near" a certain value but you need to specify a tolerance.  
+```{r}
+filter(penguins, near(body_mass_g, 5400, tol = 100))
+```
+## Practice
+The data are from: Gaeta J., G. Sass, S. Carpenter. 2012. Biocomplexity at North Temperate Lakes LTER: Coordinated Field Studies: Large Mouth Bass Growth 2006. Environmental Data Initiative.  [link](https://portal.edirepository.org/nis/mapbrowse?scope=knb-lter-ntl&identifier=267)  
+1. Load the data
+```{r}
+fish <- read.csv("data/Gaeta_etal_CLC_data.csv")
+fish
+```
+2. Filter the `fish` data to include the samples from lake "BO".
+```{r}
+names(fish)
+```
+```{r}
+filter(fish,lakeid == "BO")
+```
+3. Filter the data to include all lakes except "AR".
+```{r}
+filter(fish,lakeid != "AR")
+```
+4. Filter the fish data to include all fish with a scalelength within 0.25 of 8.
+```{r}
+filter(fish, near(scalelength, 8, tol = 0.25))
+```
+5. Filter the fish data to include fish with a scalelength between 2 and 4.
+```{r}
+filter(fish, between(scalelength, 2, 4))
+```
+## Using `filter()` on multiple conditions
+You can also use `filter()` to extract data based on multiple conditions. Below we extract the Chinstrap penguins that have a body mass greater than 4500g.
+```{r}
+names(penguins)
+```
+```{r}
+filter(penguins, species == "Chinstrap" & body_mass_g > 4500) #can use , instead of &
+```
+Notice that the `|` operator generates a different result. Why?
+```{r}
+filter(penguins, species == "Chinstrap" | body_mass_g > 4500) # | is an "OR" so as long as one condition is fulfilled it will be included
+```
+Rules:  
++ `filter(condition1, condition2)` will return rows where both conditions are met. By default the , means &.    
++ `filter(condition1, !condition2)` will return all rows where condition one is true but condition 2 is not.  
++ `filter(condition1 | condition2)` will return rows where condition 1 or condition 2 is met.  
+In this case, we filter out the penguins with a body mass over 5000g and a bill length over 50mm or a bill depth over 18mm.
+```{r}
+filter(penguins, body_mass_g > 5000, (bill_length_mm > 50 | bill_depth_mm > 18))
+```
+## Pipes `%>%` 
+In order to start combining `select()`, `filter()`, and other functions efficiently, we need to learn pipes. Pipes feed the output from one function into the input of another function.  
+Let's say we are only interested in the body mass of Gentoo penguins. We can use pipes to first select the species and body mass columns then filter that output only for Gentoo penguins. Notice that we only need to call the data one time.
+```{r}
+penguins %>%
+  select(species, body_mass_g) %>% 
+  filter(species == "Gentoo")
+```
+We can sort the output of `filter()` using the `arrange()` function. Here we filter for Gentoo penguins and then sort them by body mass in ascending order.
+```{r}
+penguins %>%
+  select(species, body_mass_g) %>% 
+  filter(species == "Gentoo") %>%
+  arrange(body_mass_g)
+```
+To sort in descending order, wrap the variable name in `desc()`.
+```{r}
+penguins %>%
+  select(species, body_mass_g) %>% 
+  filter(species == "Gentoo") %>%
+  arrange(desc(body_mass_g)) 
+```
+`slice()`
+```{r}
+penguins %>%
+  select(species, body_mass_g) %>% 
+  filter(species == "Gentoo") %>%
+  slice_max(body_mass_g, n = 1) #slice_max gets largest bodymass, slice_min gets smallest 
+```
+## Practice
+Let's use the fish data again to keep things simple.
+1. We are interested in the radii length and scalelength of fish with the id `300`. Extract this information from the `fish` data. Please sort the data by radii length.
+```{r}
+names(fish)
+```
+```{r}
+fish %>%
+  select(fish_id, radii_length_mm, scalelength) %>% 
+  filter(fish_id == 300) %>%
+  arrange(radii_length_mm) 
+```
+2. We are interested in the fish from the lakes "AL" and "AR" with a radii length between 2 and 4. Extract this information from the `fish` data. Please sort the data in descending order by radii length.
+```{r}
+fish %>%
+  select(lakeid, radii_length_mm) %>% 
+  filter(lakeid == "AL" | lakeid == "AR") %>%
+  filter(between(radii_length_mm, 2, 4)) %>%
+  arrange(desc(radii_length_mm)) 
+```
+
+hw5:
+## Data
+**Database of vertebrate home range sizes.** 
+Reference: Tamburello N, Cote IM, Dulvy NK (2015) Energy and the scaling of animal space use. The American Naturalist 186(2):196-211. http://dx.doi.org/10.1086/682070.  
+Data: http://datadryad.org/resource/doi:10.5061/dryad.q5j65/1  
+**1. Load the data into a new object called `homerange`.**
+```{r}
+homerange <- read.csv("data/Tamburelloetal_HomeRangeDatabase.csv")
+```
+**2. What is the structure of the `homerange` data? Does it have any NA's? Do a quick exploratory analysis of your choice below.**
+```{r}
+glimpse(homerange)
+```
+The homerange data does have NA values in "N", "preymass", "log10.preymass", "PPMR", and "prey.size.reference". 
+```{r}
+summary(homerange)
+```
+**3. Which animal groups are represented in the data? Make a plot that shows the number in each class.**
+```{r}
+names(homerange)
+```
+```{r}
+ggplot(data = homerange,
+      mapping = aes(x = class)) + 
+      geom_bar(mapping = aes(fill = class)) +
+      labs(title = "Number of Animal Groups in Each Class",
+       x = "Class",
+       y = "Number of Animal Groups")
+```
+**4. Are there more carnivores or herbivores represented in the data? Make a plot that shows the number in each trophic guild.**
+```{r}
+ggplot(data = homerange,
+      mapping = aes(x = trophic.guild)) + 
+      geom_bar(mapping = aes(fill = trophic.guild)) +
+      labs(title = "Number of Animal Groups in Each Trophic Guild",
+       x = "Trophic Guild",
+       y = "Number of Animal Groups")
+```
+There are more carnivores in the data than herbivores. 
+**5. Which herbivorous mammals have homeranges greater than 1,000,000 m²? Show only the common name, order, mean homerange size, and mean body mass. Arrange the data in descending order by homerange size and show only the top 10 species.**
+```{r}
+homerange %>%
+  select(common.name, order, mean.hra.m2, mean.mass.g) %>% 
+  filter(mean.hra.m2 >= 1000000) %>%
+  arrange(desc(mean.hra.m2)) %>%
+  slice_max(mean.hra.m2, n = 10)
+```
+**6. Which two species have the largest and smallest homerange sizes?**
+```{r}
+homerange %>%
+  select(common.name, order, mean.hra.m2, mean.mass.g) %>% 
+  arrange(desc(mean.hra.m2)) %>%
+  slice_max(mean.hra.m2, n = 1)
+```
+```{r}
+homerange %>%
+  select(common.name, order, mean.hra.m2, mean.mass.g) %>% 
+  arrange(mean.hra.m2) %>%
+  slice_min(mean.hra.m2, n = 1)
+```
+**7. Which carnivorous mammals have the largest homeranges?**
+```{r}
+homerange %>%
+  select(common.name, order, mean.hra.m2, mean.mass.g, trophic.guild) %>% 
+  filter(trophic.guild == "carnivore") %>%
+  arrange(desc(mean.hra.m2)) %>%
+  slice_max(mean.hra.m2, n = 10)
+```
+**8. Is there a relationship between body mass and homerange size? Make a scatterplot to show this relationship. Be sure to include appropriate labels and a title.**
+```{r}
+ggplot(data = homerange,
+      mapping = aes(x = mean.mass.g,y = mean.hra.m2)) + 
+      geom_point(mapping = aes(color = trophic.guild)) + 
+      geom_smooth(method = lm, se = F, na.rm = T) +
+      scale_x_log10() +
+      scale_y_log10() + 
+      labs(title = "Body Mass (g) vs. Homerange Size (m^2)",
+       x = "Body Mass (g)",
+       y = "Homerange Size (m^2)")
+```
+There is a relationship between body mass and homerange size.
+**9. Use filter to extract the data for only birds and mammals. Then make a plot that compares the homerange sizes of these two groups. Be sure to include appropriate labels and a title.**
+```{r}
+homerangebm = filter(homerange, taxon == "birds" | taxon == "mammals")
+
+ggplot(data = homerangebm,
+      mapping = aes(x = taxon, y = mean.hra.m2)) + 
+      geom_boxplot(mapping = aes(fill = taxon)) +
+      scale_y_log10() + 
+      labs(title = "Taxon vs. Mean Homerange Size (m^2)",
+       x = "Taxon",
+       y = "Mean Homerange Size (m^2)")
+```
+**10. Do one additional exploratory analysis of your choice. Before writing the code, write the question you are trying to answer. The question should be biologically meaningful and appropriate for the data. It must include at least one `filter()`, `select()`, and `arrange()`.**
+The question I am trying to answer is out of all of the bird species in the data, do carnivores have a larger homerange size than herbivores?
+```{r}
+homerange %>%
+  select(common.name, taxon, order, family, trophic.guild, mean.mass.g, mean.hra.m2) %>% 
+  filter(taxon == "birds") %>%
+  arrange(desc(mean.hra.m2)) %>%
+  slice_max(mean.hra.m2, n = 10)
+  
+
+homerangeb = filter(homerange, taxon == "birds")
+ggplot(data = homerangeb,
+      mapping = aes(x = trophic.guild, y = mean.hra.m2)) + 
+      geom_boxplot(mapping = aes(fill = trophic.guild)) +
+      scale_y_log10() + 
+      labs(title = "Trophic Guild vs. Mean Homerange Size (m^2)",
+       x = "Trophic Guild",
+       y = "Mean Homerange Size (m^2)")
+```
+
+lab6:
+## Load the tidyverse
+```{r}
+library("tidyverse")
+library("janitor") #this will help with cleaning
+library("palmerpenguins") #load the palmerpenguins package
+options(scipen=999) #turn off scientific notation
+```
+1. Select species, island, and body mass from the penguins data. Arrange results by body mass.
+```{r}
+penguins %>%
+  select(species, island, body_mass) %>%
+  arrange(body_mass)
+```
+2. Filter the penguins data to only include observations from Biscoe and Dream islands.
+```{r}
+penguins %>%
+  select(species, island, body_mass) %>%
+  filter(island == "Biscoe" | island == "Dream")  %>% #ideally put select before filter
+  arrange(body_mass)
+```
+```{r}
+penguins %>% #alt method with concatenation
+  select(species, island, body_mass) %>%
+  filter(island == c("Biscoe", "Dream"))  %>% #ideally put select before filter
+  arrange(body_mass)
+```
+```{r}
+penguins %>% #alt method with concatenation + %in%
+  select(species, island, body_mass) %>%
+  filter(island %in% c("Biscoe", "Dream"))  %>% #ideally put select before filter
+  arrange(body_mass)
+```
+3. Make a plot that shows the relationship between body mass and flipper length. How does this compare among different species?
+```{r}
+penguins %>%
+  select(body_mass, flipper_len) %>%
+  ggplot(data = penguins,
+      mapping = aes(x = body_mass, y = flipper_len)) + 
+      geom_point(mapping = aes(color = species)) + #can just be geom_point() for no colors
+      geom_smooth(se = FALSE, method = lm) + 
+      labs(title = "Body Mass (g) vs. Flipper Length (mm)",
+           x = "Body Mass (g)",
+           y = "Flipper Length (mm)")
+```
+## `distinct()`
+`distinct()` looks for all unique observations in rows. This is a little tricky because it can look like it is working column-wise, but it is actually working row-wise.  
+One helpful approach to new data is to find any duplicated rows. If we first look at the dimensions of the penguins data, we see it has 344 rows and 8 columns.
+Using `distinct()` across all rows, we see there are no duplicates. This means every row contains unique observations across all variables.
+```{r}
+penguins %>%
+  distinct() #looks across dataframe and compares every row, if there's a row thats the same as the other one it will flag them to ignore in new output
+```
+But if we only look at species, we can see that there are only 3 unique species in the data.
+```{r}
+penguins %>%
+  distinct(species)
+```
+What if we want to know which islands each species occurs on?
+```{r}
+penguins %>%
+  distinct(species, island, .keep_all=T) #.keep_all shows all other variables 
+```
+## `mutate()`
+`mutate()` is another verb that acts on columns. It allows us to create new columns from existing columns in a data frame. When we use `mutate()`, the columns are added to the end of the dataframe by default. Let's create a new column that converts body mass from grams to kilograms.
+```{r}
+penguins %>%
+  mutate(body_mass_kg = body_mass / 1000) %>%
+  select(species, body_mass, body_mass_kg) %>%
+  arrange(body_mass_kg)
+```
+## `mutate()` and `across()`
+We use `across()` within `mutate()` to apply a function to multiple columns. This is especially helpful when cleaning data. For example, let's say we want to convert all columns that end with `mm` to centimeters. We can use `across()` to do this.
+```{r}
+penguins %>%
+  mutate(across(ends_with("len"), ~./10)) %>%
+  select(species, bill_length_cm = bill_len, bill_depth_cm = bill_dep, flipper_length_cm = flipper_len) 
+```
+What does the `~./10` mean? The `~` indicates that what follows is a formula (lambda function). The `.` represents the current column being processed. So, `./10` means "take the current column and divide it by 10". This operation is applied to all columns that end with `mm`.
+## Cleaning Data
+Cleaning raw data is an essential, but tedious step in data analysis. It's impossible to predict every scenario that you will come across, but there are some common issues that we can learn to address.
+We already learned how to use `rename()` to change column names. We also learned how to rename columns from within `select()`. But, this can be very inefficient if we have a large dataset.
+Let's have a look at some new data focused on mammal lifehistories. The data are from: S. K. Morgan Ernest. 2003. Life history characteristics of placental non-volant mammals. Ecology 84:3402.   [link](http://esapubs.org/archive/ecol/E084/093/)  
+```{r}
+mammals <- read.csv("data/mammal_lifehistories_v2.csv") #%>% clean_names() *Note: clean_names() done immediately if possible
+```
+One thing to notice is the column names are inconsistent. This is going to cause problems for us down the line. We could rename each column, one at a time, using `rename()`, but that would be tedious. Instead, we can use the `clean_names()` function from the `janitor` package to fix all of the column names at once.
+```{r}
+mammals <- mammals %>%
+  clean_names() 
+```
+Notice that `clean_names()` has converted all column names to lowercase and replaced spaces with underscores. But, no adjustments were made to the data itself. What if we want to change observations from upper case to lower case?
+```{r}
+mammals %>%
+  mutate(across(c("order","family"), tolower)) #tolower makes specific columns all lowercase
+```
+This will change all columns to lower case. But, notice what happens to numeric columns.
+```{r}
+mammals %>%
+  mutate(across(everything(), tolower)) #everything in database made lowercase, numerics turned into characters however, best suited for only character-based dataframes/categorical
+```
+For this reason, it might be better to use `where` so we can specify only character columns.
+```{r}
+mammals %>%
+  mutate(across(where(is.character), tolower))
+```
+## `if_else()`
+We briefly introduce `if_else()` here because it allows us to use `mutate()` but not have the entire column affected in the same way. With `ifelse()`, you first specify a logical statement, afterwards what needs to happen if the statement returns `TRUE`, and lastly what needs to happen if it's  `FALSE`.  
+Have a look at the data from mammals below. Notice that the values for newborn include `-999.00`. This is sometimes used as a placeholder for NA (but, is a really bad idea). We can use `if_else()` to replace `-999.00` with `NA`.  
+```{r}
+mammals %>%
+  select(genus, species, newborn) %>%
+  arrange(newborn)
+```
+```{r}
+mammals %>%
+  select(genus, species, newborn) %>%
+  mutate(newborn_new = ifelse(newborn == -999.00, NA, newborn))
+```
+1. Following the example above, convert all -999 values in the mammals dataframe to NA.
+```{r}
+mammals <- mammals %>%
+  mutate(across(c(mass, wean_mass, gestation, max_life, newborn, weaning, litter_size, afr, litters_year),  ~ifelse(.== -999.00, NA, .)))
+
+  #mutate(across(everything(), tolower)) #everything in database made lowercase, numerics turned into characters however, best suited for only character-based dataframes/categorical
+```
+2. In the mammals data, make a new column `mass_kg` that that converts mass from grams to kilograms. Select the columns genus, species, mass, and mass_kg, and arrange the data by mass_kg in descending order. What is the common name for the species with the highest mass?  
+```{r}
+mammals %>%
+  mutate(mass_kg = mass / 1000) %>%
+  select(genus, species, mass, mass_kg) %>%
+  arrange(desc(mass_kg))
+```
+Common Name is Blue Whale. 
+3. What is the relationship between gestation and newborn mass?
+```{r}
+mammals %>%
+  select(gestation, newborn) %>%
+  ggplot(data = mammals,
+         mapping = aes(x = log10(gestation), y = log10(newborn))) +
+         geom_point() + 
+        # geom_smooth(se = F, method = lm) + 
+         labs(title = "Gestation vs. Newborn Mass", 
+              x = "Gestation", 
+              y = "Newborn Mass")
+```
+4. Which mammal has the longest life span in years?  
+```{r}
+mammals %>%
+  mutate(max_life_years = max_life / 12)  %>% #instructor example has mutate and select lines swapped)
+  select(genus, species, max_life, max_life_years) %>%
+  arrange(desc(max_life_years))
+```
+5. Do larger mammals live longer?
+```{r}
+mammals %>%
+  ggplot(mapping = aes(x = log10(mass), y = max_life)) + 
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
 
 
