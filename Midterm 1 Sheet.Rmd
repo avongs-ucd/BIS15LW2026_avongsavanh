@@ -12,12 +12,6 @@ output:
 
 ## 
 
-## Load the libraries
-```{r message=FALSE, warning=FALSE}
-library("tidyverse")
-library("janitor")
-```
-
 Lab 1_1: 
 ## RStudio Layout  
 When you open RStudio, you will see that the window is divided into four sections. Each of these sections has a specific function that we will use throughout the course.  
