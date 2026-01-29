@@ -10,10 +10,7 @@ output:
     toc: yes
 ---
 
-## Learning Goals
-*At the end of this exercise, you will be able to:*    
-1. Produce statistical summaries using `summarize()`.  
-4. Produce counts using `count()`.  
+## 
 
 ## Load the libraries
 ```{r message=FALSE, warning=FALSE}
@@ -21,186 +18,200 @@ library("tidyverse")
 library("janitor")
 ```
 
-## Data
-For this lab, we will use the built-in data on mammal sleep patterns, `msleep`. From: _V. M. Savage and G. B. West. A quantitative, theoretical framework for understanding mammalian sleep. Proceedings of the National Academy of Sciences, 104 (3):1051-1056, 2007_.
 
-## Summary statistics
-When first exploring data, it is often a good idea to produce some basic summary statistics. This can help you identify potential problems with the data (e.g., outliers, missing values, skew) as well as get a general sense of the distribution of values for a given variable. So far, you have learned to calculate summary statistics using _base R_ functions such as `mean()`, `sd()`, `min()`, and `max()`.  
+Lab 1_1: 
+## RStudio Layout  
+When you open RStudio, you will see that the window is divided into four sections. Each of these sections has a specific function that we will use throughout the course.  
+
+1. **Source (Top Left)**: This is where you write and edit R scripts and RMarkdown files.  
+2. **Console (Bottom Left)**: This is where R executes your commands.   
+3. **Environment (Top Right)**: The Environment tab shows all the objects (like data frames, vectors, etc.) that you have created during your R session.  
+4. **Files/Plots/Packages/Help/Viewer (Bottom Right)**: This section has multiple tabs. The Files tab allows you to navigate your file system. The Plots tab displays any graphs you create. The Packages tab lets you manage R packages. The Help tab provides access to R documentation, and the Viewer tab is used for viewing local web content. 
+
+Lab 1_2:
+## GitHub  
+[GitHub](http://www.github.com) is a file storage and management site used by programmers. Programmers upload code to repositories (folders) and make it publicly available. We will use Github to store our work and manage workflows in BIS 15L. We have a main repository for our class [datascibiol](https://github.com/jmledford3115/datascibiol). You should **Star** this repository for future reference.  
+
+## GitHub Desktop  
+The easiest way to manage your GitHub repository is to use [GitHub desktop](https://desktop.github.com/). This is a  helpful tool that will allow you to manage all of your files. Open the program and login using your GitHub account.  
+
+## Clone Your Repository  
+In GitHub desktop, you will see your personal repository as an option under `clone repository`. Clone your repository to the desktop. Once you have done this any changes you make to files will be recorded and easily uploaded. Do not move this folder from your desktop.  
+
+## Copy the Class Repository
+In order to keep track of the class files, the last thing you need to do is make a copy of the class repository. I will make regular changes to the class repository including the addition of files and data that you will need. Do a search for `datascibiol` and download a copy to the desktop. You do this by navigating to the repository then going to the small green code button at top right. Click on the code button then go to Download ZIP.  
+
+Copy the `lab1` folder from the class repository and paste it into your personal repository. By doing this, you have created your own copies of lab materials for lab 1.  
+
+## Using GitHub  
+You will use your repository to store all of your notes and work. There are three terms that we need to define:  
+1. `Commit` takes a snapshot of your current progress.    
+2. `Pull` this is the same as download.     
+3. `Push` this is the same as upload.    
+
+If you setup [GitHub desktop](https://desktop.github.com/), then you will see that it automatically tracks your changes. Clicking the `Commit to master` button in the bottom left corner means that you are recording a snapshot of your edits locally. Once this is done, you need to upload your changes to GitHub. This is done by clicking `Push origin`. Once you have pushed your changes you can double check by looking at your repository on github.com.    
+
+## RMarkdown
+The file format we use in class is called a markdown file. RMarkdown files have the extension `.Rmd` and can be created in RStudio by going to `File > New File > RMarkdown`. RMarkdown files allow you to combine text, code, and output in a single document.  
+
+## Knitting
+RMarkdown files need to be `knit` in order to produce a final document. This is done by clicking the `Knit` button at the top of the RStudio window. Knitting produces a final document in HTML format. You will turn in all homework assignments as knitted HTML files. If your code does not work, then the file will not knit.    
+
+lab 2_intro:
+1. What is the difference between R and RStudio?  R is the actual programming language doing the calculations/dataprocessing, RStudio is the dashboard/userinterface to make it easier to write code and manage files
+2. What is GitHub and GitHub Desktop and why are they useful to programmers?  Github is a cloud-based data hosting service to store projects online and collaborate with others, Github Desktop is an application of Github outside of the website to sync files directly from the computer to the online cloud storage. 
+3. What is version control and why is it useful to programmers?  Version control is a system of records changes to a file that can be accessed at any time. This lets you undo changes as needed and tracks the entire history of the file. 
+4. What is a repository?  A repository is a project's folder containing all of its files, which is tracked online. 
+5. What is the difference between committing and pushing?  committing will save the files locally on your computer, pushing will save the files online to the cloud
+
+lab 2_1:
+## Working Directories and Paths
+Before we get started with R, it is important to understand the concept of working directories and paths. A working directory is the folder on your computer where R will look for files to read in and where it will save files that you create. You can check your current working directory using the `getwd()` function.
 ```{r}
-summary(msleep)
+getwd() #identify current working directory
+```
+What if you find that you are not in the correct working directory? You can change your working directory in two ways. The first is to look at the Session menu at the top of RStudio. Click on Session -> Set Working Directory -> Choose Directory. Then navigate to the folder you want to use as your working directory. 
+The second way is to use the `setwd()` function. You will need to provide the full path to the folder you want to use. For example:
+```{r}
+#setwd("/Users/yourname/Documents/yourfolder") #uncomment and change to your path
+
+#setwd("/Users/avongsav/Desktop/BIS15LW2026_avongsavanh/lab2")
+```
+What is a path? A path is the location of a file or folder on your computer. It tells R where to find files to read in or where to save files you create. Paths can be absolute or relative. An absolute path provides the full location of a file or folder, starting from the root directory. A relative path provides the location of a file or folder in relation to the current working directory.
+## Objects
+In order to access the potential of R we need to assign values or other types of data to `objects`. There is a specific format that I want you to follow, so please pay close attention.  
+
+Assign a value to object 'x'. The '<-' symbol is read as 'gets'. In this case, x gets 42. Make sure that you are in the environment panel and you should see the value associated with 'x'. On a mac, you can push `option` and `-` to automatically generate the gets symbol.  
+```{r}
+x  <- 42 #x gets the value 42
+```
+Make two new objects, treatment and control. The value of treatment is 36 and the value of control is 38.
+```{r}
+treatment <- 36
+control <- 38
+```
+What is the sum of treatment and control?
+```{r}
+treatment + control 
+```
+Here we make a new object `my_experiment` that is the sum of the treatment and control. Notice that I use `_` and not spaces. 
+```{r}
+my_experiment <- treatment + control
+my_experiment
+```
+We can also use the function sum to do the same thing. Notice that if I give a new object the same name as an existing object, the old one is replaced.
+```{r}
+my_experiment <- sum(treatment,control)
+```
+To learn more about the sum function, use the help command `?`.
+```{r}
+?sum
+```
+What is the mean of 2+8+2? (Do the math in your head first). Does the following code match your prediction?
+```{r}
+sum <- 2 + 8 + 2 
+mean <- sum / 3
+``` 
+Order of operations applies, so we need to tell R exactly what we want.
+```{r}
+(2+8+2)/3
+```
+Here we use the mean function. Notice that we use `c` which stands for concatenate. This combines the three numbers into a single object that the mean function can use. This type of data structure is called a vector.
+```{r}
+mean(c(2,8,2)) #c stands for combine and creates a vector
+```
+Why does this not work?
+```{r}
+mean(2,8,2) #outputs 2 
+```
+1. Create three new objects, `venom_GT`, `chiron`, and `veyron`. These are the fastest cars in the world. Assign each car to its top speed. The venom_GT can go 270, chiron is 261, and veyron is 268. 
+```{r}
+venom_GT <- 270
+chiron <- 261
+veyron <- 268
+```
+2. Use arithmetic to calculate the mean top speed for the cars.
+```{r}
+mean_speed <- (venom_GT + chiron + veyron)/3
+mean_speed
+```
+3. Use the function `mean()` to calculate the mean top speed for the cars.
+```{r}
+mean_speed <- mean(c(venom_GT,chiron,veyron)) #make sure you use a vector using the c
+```
+## Types of Data
+There are four frequently used `classes` of data: 1. numeric, 2. integer, 3. character, 4. logical.
+```{r}
+my_numeric <- 42
+my_integer <- 2L #adding an L automatically denotes an integer
+my_character <- "universe"
+my_logical <- FALSE
+```
+To find out what type of data you are working with, use the `class()` function. This is important because sometimes we will need to change the type of data to perform certain analyses.
+```{r}
+class(my_numeric)
+```
+```{r}
+class(my_integer)
+```
+You can use the `is()` and `as()` functions to clarify or specify a type of data.
+```{r}
+is.integer(my_numeric)
+```
+Let's convert my_numeric to an integer. 
+```{r}
+my_numeric <- as.integer(my_numeric) #important when we work with plots
+```
+```{r}
+is.integer(my_numeric)
+```
+## Missing Data
+R has a special way to designate missing data, the NA. NA values in R have specific properties which are very useful if your data contains any missing values. Later this quarter we will have a lab focused on dealing with NAs.  
+
+NA values are used to designate missing data. `is.na` or `anyNA` are useful functions when dealing with NAs in data. 
+```{r}
+my_missing <- NA #NA stands for missing
+```
+```{r}
+is.na(my_missing)
+```
+```{r}
+anyNA(my_missing)
+```
+## Practice  
+1. Let's create a vector that includes some missing data. For now, run the following code chunk.  
+```{r}
+new_vector <- c(7, 6.2, 5, 9, NA, 4, 9.8, 7, 3, 2)
+```
+2. Calculate the mean of `new_vector`.
+```{r}
+mean(new_vector)
+```
+4. Recalculate the mean using the following code chunk. Why is the useful?  
+```{r}
+mean(new_vector, na.rm = TRUE) #removes NA values, can use "T" instead of "TRUE"
 ```
 
-## Practice
-1. Calculate the mean body weight of large and small mammals in msleep. Large mammals have a body weight greater than 150, while small mammals have a body weight less than 10. I did large mammals for you as an example.  
+hw2:
+**4. Write a code chunk that divides `pi` by 2. Use the help command `?` to learn how to use the `round` function to limit your result to 4 significant digits.**  
 ```{r}
-large <- msleep %>% 
-  filter(bodywt > 150) %>% 
-  arrange(desc(bodywt))
-large
+?round
+
+piover2 <- pi/2
+piover2rounded <- round(piover2,4)
+piover2rounded
+```
+**5. Calculate the mean for: 2, 8, 4, 6, NA, 4, 9, 9, 10, NA. Please start by making a new vector `x` that holds these values then use `mean` to perform the calculation.**
+```{r}
+x = c(2, 8, 4, 6, NA, 4, 9, 9, 10, NA)
+x
+```
+```{r}
+mean(x, na.rm = T)
 ```
 
-```{r}
-small <- msleep %>% 
-  filter(bodywt < 10) %>% 
-  arrange(bodywt)
-small
-```
 
-```{r}
-largem <- mean(large$bodywt)
-largem
-```
 
-```{r}
-smallm <- mean(small$bodywt)
-smallm
-```
 
-## `summarize()`
-Fortunately, dplyr has some functions that make producing summary statistics easier. The verb `summarize()` produces summary statistics for a given variable in a data frame. Let's try the examples above using `summarize()`. 
 
-Large mammals
-```{r}
-msleep %>%
-  filter(bodywt > 150) %>%
-  summarize(mean_bodywt_large = mean(bodywt)) 
-```
 
-Small mammals
-```{r}
-msleep %>%
-  filter(bodywt < 10) %>%
-  summarize(mean_bodywt_small = mean(bodywt)) 
-```
-
-You can also combine functions to make summaries for multiple variables.
-```{r}
-msleep %>%
-  filter(bodywt > 150) %>%
-  summarize(mean_bodywt_large = mean(bodywt), 
-            min_bodywt_large = min(bodywt),
-            max_bodywt_large = max(bodywt),
-            sd_bodywt_large = sd(bodywt),
-            total = n()) #number of observations
-```
-
-Maybe you want to summarize all of the numeric variables in the data frame. You can use the `where()` function to select only the numeric variables.
-```{r}
-msleep %>%
-  select(where(is.numeric)) %>%
-  summarize_all(mean)
-```
-
-Don't forget to remove NA's.
-```{r}
-msleep %>%
-  select(where(is.numeric)) %>%
-  summarize_all(mean, na.rm = T)
-```
-
-This is a little more efficient.
-```{r}
-msleep %>%
-  summarize(across(where(is.numeric),
-                   ~mean(.x, na.rum = T))) #.x means for every cell
-```
-
-## Practice
-1. What is the mean, min, and max `bodywt` for the taxonomic order Primates? Provide the total number of observations.
-```{r}
-msleep %>%
-  filter(order == "Primates") %>%
-  summarize(mean_bodywt_p = mean(bodywt), 
-            min_bodywt_p = min(bodywt),
-            max_bodywt_p = max(bodywt),
-            total = n()) #number of observations
-```
-
-`n_distinct()` is a handy way of cleanly presenting the number of distinct observations. Notice that there are 9 genera with over 100 in body weight.
-```{r}
-msleep %>%
-  filter(bodywt > 150) %>%
-  distinct()
-```
-
-Here we show the number of distinct genera over 100 in body weight.
-```{r}
-msleep %>%
-  filter(bodywt > 100) %>%
-  summarize(n_genara = n_distinct(genus))
-```
-
-Not to be confused with n(), which counts the total number of observations.
-```{r}
-msleep %>%
-  filter(bodywt > 100) %>%
-  summarize(total = n())
-```
-
-```{r}
-
-```
-
-`pull()` is another useful verb that extracts a single column from a data frame as a vector.
-```{r}
-msleep %>%
-  filter(bodywt > 100) %>%
-  distinct() %>%
-  pull(genus)
-```
-
-## Practice
-1. How many genera are represented in the msleep data frame?
-```{r}
-msleep %>%
-  summarize(n_genara = n_distinct(genus))
-```
-
-## Counts
-Although `summarize()` is helpful, oftentimes we are only interested in counts. The [janitor package](https://garthtarr.github.io/meatR/janitor.html) does a lot with counts, but there are also functions that are part of dplyr that are useful.  
-
-For example, if we wanted to count the number of observations for each `vore` category in the `msleep` data frame we could do the following:
-```{r}
-msleep %>%
-  count(vore)
-```
-
-```{r}
-msleep %>%
-  count(vore, sort = T) %>% #sort = T sorts in descending order
-  ggplot(aes(x = vore, y = n)) + 
-  geom_col(mapping = aes(fill = vore)) + #use geom_col if we have an x and a y variable 
-  labs(title = "Number of Species per Vore",
-  x = "Vore",
-  y = "Number of Species")
-```
-
-You can even combine multiple variables to get counts. For example, if we wanted to count the number of observations for each `vore` category within each `order` category we could do the following:
-```{r}
-msleep %>%
-  count(vore, order)
-```
-
-The tabyl() function from the janitor package is also very useful for producing counts and percentages.  
-```{r}
-msleep %>%
-  tabyl(vore)
-```
-
-## Practice
-1. In the taxonomic order Carnivora, count the number of observations for each conservation status.
-```{r}
-msleep %>%
-  filter(order == "Carnivora") %>%
-  count(conservation, sort = T)
-```
-
-2. Among herbivores, which order is most represented? Return the top 5 orders with counts, sorted in descending order.
-```{r}
-msleep %>%
-  filter(vore == "herbi") %>%
-  count(order, sort = T) %>%
-  slice_max(n, n = 5)
-```
-
--->[Home](https://jmledford3115.github.io/datascibiol/)  
