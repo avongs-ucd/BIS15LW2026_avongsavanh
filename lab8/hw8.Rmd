@@ -57,17 +57,18 @@ fisheries_clean
 ```{r}
 fisheries_clean %>%
   distinct(country) 
+#figure out how to count number of distinct entries
 ```
 
 5. The variables `common_name` and `taxonomic_code` both refer to species. How many unique species are represented in the data based on each of these variables? Are the numbers the same or different?
 ```{r}
 fisheries_clean %>%
-  distinct(common_name, taxonomic_code)
+  distinct(common_name, taxonomic_code) #can do summarize as well
 ```
 
 6. In 2023, what were the top five countries that had the highest overall catch?
 ```{r}
-fisheries_clean %>%
+fisheries_clean %>% #group by country because you use summarize later, take sum of the total catch for 7 (make a new column)
   filter(period == 2023) %>%
   select(period, country, catch) %>%
   arrange(desc(catch)) %>%
@@ -97,8 +98,8 @@ For the species that was caught the most above (Anchoveta, or the Peruvian ancho
 9. How has fishing of this species changed over the last decade (2013-2023)? Create a  plot showing total catch by year for this species.
 ```{r}
 fisheries_clean_anchoveta <- fisheries_clean %>%
-  mutate(period, as.integer()) %>%
-  filter(common_name == "Anchoveta(=Peruvian anchovy)", between(period, 2013, 2023))
+#  mutate(period, as.integer()) %>%
+  filter(common_name == "Anchoveta(=Peruvian anchovy)", between(period %in% 2013:2023))
 ```
 
 ```{r}
