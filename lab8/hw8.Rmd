@@ -1,6 +1,6 @@
 ---
 title: "Homework 8"
-author: "Your Name Here"
+author: "Alan Vongsavanh"
 date: "`r Sys.Date()`"
 output:
   html_document: 
@@ -15,7 +15,7 @@ Answer the following questions and/or complete the exercises in RMarkdown. Pleas
 ```{r message=FALSE, warning=FALSE}
 library("tidyverse")
 library("janitor")
-library("naniar")
+# library("naniar")
 options(scipen = 999)
 ```
 
@@ -29,52 +29,97 @@ fisheries_clean <- read_csv("data/fisheries_clean.csv")
 
 1. Explore the data. What are the names of the variables, what are the dimensions, are there any NA's, what are the classes of the variables, etc.? You may use the functions that you prefer.
 ```{r}
-
+glimpse(fisheries_clean)
 ```
+
+```{r}
+names(fisheries_clean)
+```
+
+```{r}
+dim(fisheries_clean)
+```
+
 
 2. Convert the following variables to factors: `period`, `continent`, `geo_region`, `country`, `scientific_name`, `common_name`, `taxonomic_code`, and `status`.
 ```{r}
-
+fisheries_clean <- fisheries_clean %>%
+  mutate(across(c(period, continent, geo_region, country, scientific_name, common_name, taxonomic_code), as.factor))
+fisheries_clean
 ```
 
-3. Are there any missing values in the data? If so, which variables contain missing values and how many are missing for each variable?
+## 3. Are there any missing values in the data? If so, which variables contain missing values and how many are missing for each variable?
 ```{r}
-
+#Skip this problem for now.
 ```
 
 4. How many countries are represented in the data?
 ```{r}
-
+fisheries_clean %>%
+  distinct(country) 
 ```
 
 5. The variables `common_name` and `taxonomic_code` both refer to species. How many unique species are represented in the data based on each of these variables? Are the numbers the same or different?
 ```{r}
-
+fisheries_clean %>%
+  distinct(common_name, taxonomic_code)
 ```
 
 6. In 2023, what were the top five countries that had the highest overall catch?
 ```{r}
-
+fisheries_clean %>%
+  filter(period == 2023) %>%
+  select(period, country, catch) %>%
+  arrange(desc(catch)) %>%
+  slice_max(catch, n = 5)
 ```
 
 7. In 2023, what were the top 10 most caught species? To keep things simple, assume `common_name` is sufficient to identify species. What does `NEI` stand for in some of the common names? How might this be concerning from a fisheries management perspective?
 ```{r}
-
+fisheries_clean %>%
+  filter(period == 2023) %>%
+  select(period, country, catch, common_name) %>%
+  arrange(desc(catch)) %>%
+  slice_max(catch, n = 10)
 ```
+NEI stands for "Not Elsewhere Included" (or Indicated), where catches are reported that they cannot be precisely identified at the species level (like the specific species beyond marine fishes nei for example cannot be identified). This is concerning from a fisheries management perspective because this tracking is important for maintaining the sustainability of the ecosystem/environment and knowing when to catch/not catch certain species. 
 
 8. For the species that was caught the most above (not NEI), which country had the highest catch in 2023?
 ```{r}
-
+fisheries_clean %>%
+  filter(period == 2023, common_name == "Anchoveta(=Peruvian anchovy)") %>%
+  select(period, country, catch, common_name) %>%
+  arrange(desc(catch)) %>%
+  slice_max(catch, n = 10)
 ```
+For the species that was caught the most above (Anchoveta, or the Peruvian anchovy), the country that had the highest catch in 2023 was Peru.
 
 9. How has fishing of this species changed over the last decade (2013-2023)? Create a  plot showing total catch by year for this species.
 ```{r}
+fisheries_clean_anchoveta <- fisheries_clean %>%
+  mutate(period, as.integer()) %>%
+  filter(common_name == "Anchoveta(=Peruvian anchovy)", between(period, 2013, 2023))
+```
 
+```{r}
+fisheries_clean_anchoveta %>% 
+  ggplot(mapping = aes(x = period, y = catch)) +
+  geom_col(mapping = aes(fill = continent)) + 
+  labs(title = "Total Catch per Year",
+      x = "Year",
+      y = "Total Catch") 
 ```
 
 10. Perform one exploratory analysis of your choice. Make sure to clearly state the question you are asking before writing any code.
+The question I am asking is was there a difference that the COVID19 pandemic had on catches? (more literally, is there a significant different in catches between 2019 and 2020)
 ```{r}
-
+fisheries_clean %>% 
+  filter(period == 2019 | period == 2020 | period == 2021) %>%
+  ggplot(mapping = aes(x = period, y = catch)) +
+  geom_col(mapping = aes(fill = continent)) + 
+  labs(title = "Total Catch per Year",
+      x = "Year",
+      y = "Total Catch") 
 ```
 
 ## Knit and Upload
