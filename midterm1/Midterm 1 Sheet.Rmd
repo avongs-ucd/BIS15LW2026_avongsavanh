@@ -700,7 +700,7 @@ filter(penguins, between(body_mass_g, 5250, 5500))
 ```
 How would you use `%in%` to get the same result?
 ```{r}
-filter(penguins, body_mass_g %in% c(5250:5500)) # or c(5250, 5300, 5350, 5400, 5450, 5500) if you know those are the other values
+filter(penguins, body_mass_g %in% c(5250:5500)f) # or c(5250, 5300, 5350, 5400, 5450, 5500) if you know those are the other values
 ```
 You can also extract observations "near" a certain value but you need to specify a tolerance.  
 ```{r}
