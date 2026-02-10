@@ -42,23 +42,41 @@ sharks %>%
 2.  Make a plot that shows the total number of incidents per county.
 ```{r}
 sharks %>% 
-  count(county, sort = T) %>% 
-  ggplot(aes(x = n, fill = county)) +
-  geom_bar()
+  ggplot(aes(x = county, fill = county)) +
+  geom_bar(position = "dodge") +
+  coord_flip() +
+  labs(title = "Total Number of Incidents Per County",
+       x = "County",
+       y = "Number of Incidents")
 ```
 
 3. Are there months of the year when incidents are more likely to occur? Make a plot that shows the total number of incidents by month. Which month has the highest number of incidents?  
 ```{r}
-
+sharks %>% 
+  #mutate(across(c(month)), as.factor) %>% 
+  ggplot(aes(x = as_factor(month))) +
+  geom_bar(position = "dodge") +
+  coord_flip() +
+  labs(title = "Total Number of Incidents By Month",
+       x = "Month",
+       y = "Number of Incidents")
 ```
 
 ```{r}
-
+sharks %>% 
+  count(month, sort = T) %>% 
+  slice_max(n, n = 5)
 ```
 
 4. Is there a time of day when most attacks occur? Make a plot that shows the total number of incidents by time of day. Which time of day has the highest number of incidents?  
 ```{r}
-
+sharks %>% 
+  ggplot(aes(x = time, fill = time)) +
+  geom_bar(position = "dodge") +
+  coord_flip() +
+  labs(title = "Total Number of Incidents By Time of Day",
+       x = "Time of Day",
+       y = "Number of Incidents")
 ```
 
 5. How do the number and types of injuries compare by county? Make a table that shows the number of injury types by county. Which county has the highest number incidents? (hint: your table should be in wide format)
