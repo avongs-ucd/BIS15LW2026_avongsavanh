@@ -221,32 +221,64 @@ homerange %>%
   ggplot(aes(x=taxon, y=log10_mass, fill=thermoregulation))+
   geom_boxplot()+
   facet_wrap(~trophic_guild, ncol = 2, labeller = label_both) + 
-  theme(axis.text.x = element_text(angle = 60, hjust=1))
+  theme(axis.text.x = element_text(angle = 60, hjust=1), 
+        legend.position = "none",
+        strip.text = element_text(size = 12, face = "bold"))
 ```
+```{r}
+homerange %>% 
+  ggplot(aes(x=taxon, y=log10_mass, fill=thermoregulation))+
+  geom_boxplot()+
+  facet_wrap(~trophic_guild, nrow = 2, labeller = label_both) + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1), 
+        legend.position = "none",
+        strip.text = element_text(size = 12, face = "bold"))
+```
+
 
 `facet_grid()` allows control over the faceted variable; it can be arranged in rows or columns. rows~columns. 
 ```{r}
-
+homerange %>% 
+  ggplot(aes(x=taxon, y=log10_mass, fill=thermoregulation))+
+  geom_boxplot()+
+  facet_grid(thermoregulation~., labeller = label_both) + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1))
 ```
 
 ```{r}
-
+homerange %>% 
+  ggplot(aes(x=taxon, y=log10_mass, fill=thermoregulation))+
+  geom_boxplot()+
+  facet_grid(.~thermoregulation, labeller = label_both) + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1))
 ```
 
 `facet_grid()` will also allow the comparison of two categorical variables, just remember a~b where a is rows and b is columns.  
 ```{r}
-
+homerange %>% 
+  ggplot(aes(x=taxon, y=log10_mass, fill=thermoregulation))+
+  geom_boxplot()+
+  facet_grid(trophic_guild ~ thermoregulation, labeller = label_both) + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1))
 ```
 
 ## Practice
 1. Use facet_wrap to compare the distribution of `log10_mass` by `thermoregulation`.
 ```{r}
-
+homerange %>% 
+  ggplot(aes(x=log10_mass, fill=thermoregulation))+
+  geom_density(fill = "steelblue", alpha = 0.3) + 
+  facet_wrap(~thermoregulation, ncol = 2) + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1))
 ```
 
 2. Use facet_grid to compare the distribution of `log10_hra` by `locomotion` and `thermoregulation`.
 ```{r}
-
+homerange %>% 
+  ggplot(aes(x=log10_hra)) +
+  geom_density(fill = "steelblue", alpha = 0.3)+
+  facet_grid(thermoregulation ~ locomotion) + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1))
 ```
 
 ## Wrap-up  
