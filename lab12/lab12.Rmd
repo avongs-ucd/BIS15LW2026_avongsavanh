@@ -43,7 +43,8 @@ life_history <- read_csv("data/mammal_lifehistories_v3.csv") %>% clean_names()
 ## Are there any NA's?
 Sometimes using one or more of the summary functions can give us clues to how the authors have represented missing data. This doesn't always work, but it is a good place to start.  
 ```{r}
-
+life_history %>% 
+  glimpse()
 ```
 
 ```{r}
