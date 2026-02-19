@@ -137,21 +137,23 @@ life_history_no_nas %>%
 
 `naniar` has nice replace functions which will allow you to precisely control which values you want replaced with NA's in each variable. This is a nice alternative to `mutate()` and `na_if()`.  
 ```{r}
-#life_history %>% #going back to the original data
-#  replace_with_na(replace = list(newborn = "not measured", 
-#                                 weaning= -999, 
-#                                 wean_mass= -999, 
-#                                 afr= -999, 
-#                                 max_life= 0, 
-#                                 litter_size= -999, 
-#                                 gestation= -999, 
-#                                 mass= -999)) %>% 
-#miss_var_summary()
+life_history %>% #going back to the original data
+  replace_with_na(replace = list(newborn = "not measured", 
+                                 weaning= -999, 
+                                 wean_mass= -999, 
+                                 afr= -999, 
+                                 max_life= 0, 
+                                 litter_size= -999, 
+                                 gestation= -999, 
+                                 mass= -999)) %>% 
+miss_var_summary()
 ```
 
 You can also use naniar to replace a specific value (like -999) with NA across the entire data set.  
 ```{r}
-
+life_history %>% 
+  replace_with_na_all(condition = ~.x == -999) %>% 
+  miss_var_summary()
 ```
 
 Finally, naniar has some built-in examples of common values or character strings used to represent NA's. The chunk below will use these built-in parameters to replace NA's across the entire data set.
@@ -164,7 +166,9 @@ common_na_numbers
 ```
 
 ```{r}
-
+life_history %>% 
+  replace_with_na_all(condition = ~.x %in% c(common_na_strings, common_na_numbers)) %>% 
+  mutate(newborn = na_if(newborn, "not measured"))
 ```
 
 ## Practice
@@ -175,17 +179,28 @@ Some key information:
 
 1. Import the data and do a little exploration. Be sure to clean the names if necessary.
 ```{r message=FALSE, warning=FALSE}
+cites <- read_csv("data/cites.csv") %>% 
+clean_names()
+```
 
+```{r}
+cites %>% 
+  glimpse()
 ```
 
 2. Use `naniar` to summarize the NA's in each variable.
 ```{r}
-
+cites %>% 
+  miss_var_summary()
 ```
 
 3. Try using `group_by()` with `naniar`. Look specifically at `class` and `exporter_reported_quantity`. For which taxonomic classes do we have the highest number of missing export data?
 ```{r}
-
+cites %>% 
+  select(class, exporter_reported_quantity) %>% 
+  group_by(class) %>% 
+  miss_var_summary() %>% 
+  arrange(desc(n_miss))
 ```
 
 -->[Home](https://jmledford3115.github.io/datascibiol/)
