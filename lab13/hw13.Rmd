@@ -38,6 +38,7 @@ amniota %>%
 
 2. Make any necessary replacements in the data such that all NA's appear as "NA". 
 ```{r}
+amniota %>% 
 
 ```
 

@@ -118,31 +118,36 @@ For this practice, we will use data from my research on _Usofila_ spiders. These
 
 1. Load the two files as separate dataframes. Make sure to clean the column names.
 ```{r message=FALSE, warning=FALSE}
-records = read_csv("data/spider_records.csv")
-locations = read_csv("data/spider_locations.csv")
+records = read_csv("data/spider_records.csv") %>% clean_names()
+locations = read_csv("data/spiders_locations.csv") %>% clean_names()
 ```
 
 ```{r, message = FALSE}
+records
+```
 
+```{r}
+locations
 ```
 
 2. Join the files using an appropriate key and join type.
 ```{r}
-
+left_join(records, locations, by = "accession")
 ```
 
 ```{r}
-
+names(records)
 ```
 
 3. Convert the date column to a date format using lubridate.
 ```{r}
-
+records %>% 
+  mutate(date = dmy(date))
 ```
 
 4. Save your final data to a `.csv`.
 ```{r}
-
+write.csv(records, file = "spiders_with_locs.csv", row.names = F)
 ```
 
 ## That's it, let's take a break!   
