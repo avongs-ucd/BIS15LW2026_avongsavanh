@@ -44,7 +44,8 @@ amniota %>%
 
 3. How many total NA's are in the data set? Use the package `naniar` to produce a summary, including percentages, of missing data in each column for the `amniota` data.
 ```{r}
-
+amniota %>% 
+  miss_var_summary()
 ```
 
 4. Double check your replacement using `summary`. Do you see any other potential issues? If so, fix them.
