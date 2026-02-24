@@ -81,18 +81,22 @@ bbox <- make_bbox(long, lat, f = 0.03)
 
 Let's get a base map for our bounding box area. There are several different map [styles](https://docs.stadiamaps.com/themes/)
 ```{r}
-
+map1 <- get_stadiamap(bbox, maptype = "stamen_terrain", zoom = 7)
 ```
 
 Have a look at the map.  
 ```{r}
-
+ggmap(map1)
 ```
 
 ## Adding Points to Base Map
 To add our points we only need to specify the x and y location similar to how we made plots in `ggplot.` 
 ```{r}
-
+ggmap(map1) + 
+  geom_point(data = spiders, aes(longitude, latitude), size = 0.75, color = "black", alpha = 0.8) +
+  labs(x = "Longitude",
+       y = "Latitude",
+       title = "California Usofila Records")
 ```
 
 ## Leaflet
@@ -100,17 +104,38 @@ If we want to make an interactive map, we can use the `leaflet` package. This al
 
 Get the min/max from the data.
 ```{r}
-
+spiders %>% 
+  summarize(
+  lon_min = min(longitude, na.rm = T),
+  lon_max = max(longitude, na.rm = T),
+  lat_min = min(latitude, na.rm = T),
+  lat_max = max(latitude, na.rm = T))
 ```
 
 Add this to four new variables which will be used to create the bounding box in leaflet.
 ```{r}
-
+lon_min <- -124.13
+lon_max <- -115.49
+lat_min <- 34.67
+lat_max <- 41.8 
 ```
 
 Build the interactive map using Stadia maps.
 ```{r}
-
+leaflet(spiders) %>% 
+  addProviderTiles(providers$Stadia.StamenTerrain) %>% 
+  addCircleMarkers(
+    lng = ~longitude,
+    lat = ~latitude, 
+    radius = 2,
+    stroke = FALSE,
+    fillOpacity = 0.7
+  ) %>% 
+  addScaleBar(position = "bottomleft") %>% 
+  fitBounds(lng1 = lon_min,
+            lat1 = lat_min,
+            lng2 = lon_max,
+            lat2 = lat_max)
 ```
 
 Build the same interactive map using default OpenStreet maps.
@@ -123,7 +148,7 @@ For this practice we will use data on the distribution of grizzly bears in Alask
 
 1. Load the `grizzly` data and evaluate its structure.  
 ```{r message=FALSE, warning=FALSE}
-
+grizzly <- read_csv("data/bear-sightings.csv")
 ```
 
 2. Use the range of the latitude and longitude to build an appropriate bounding box for your map.  
