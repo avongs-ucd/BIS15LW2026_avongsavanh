@@ -108,17 +108,137 @@ shinyApp(ui, server)
 
 Let's add our ui and server elements to make a functional dashboard. We will put our ui elements in the `dashboardBody()`. For now, we will turn off the sidebar.
 ```{r, eval=F, echo=T}
+ui <-  dashboardPage(
 
+  dashboardHeader(title = "Distribution of Gestation Length by Order"),
+ 
+  dashboardSidebar(disable = T),
+  
+  dashboardBody(
+    
+  selectInput("x", 
+              "Select Mammalian Order",
+              choices = sort(unique(gestation$order)),
+              selected = "Afrosoricida"),    
+    
+  selectInput("y", 
+              "Select Variable of Interest",
+              choices = c("bodymass",
+                          "longevity",
+                          "gestationlength"),
+              selected = "bodymass"),    
+    
+  helpText("Testing 123"),
+  
+  plotOutput("plot",
+             width = "600px",
+             height = "500px")
+  
+  ) 
+)
+
+server <- function(input, output) { }
+
+shinyApp(ui, server)
 ```
 
 Now let's add our server functions.
 ```{r, eval=F, echo=T}
+ui <-  dashboardPage(
 
+  dashboardHeader(title = "Distribution of Gestation Length by Order"),
+ 
+  dashboardSidebar(disable = T),
+  
+  dashboardBody(
+    
+  selectInput("x", 
+              "Select Mammalian Order",
+              choices = sort(unique(gestation$order)),
+              selected = "Afrosoricida"),    
+    
+  selectInput("y", 
+              "Select Variable of Interest",
+              choices = c("bodymass",
+                          "longevity",
+                          "gestationlength"),
+              selected = "bodymass"),    
+    
+  helpText("Testing 123"),
+  
+  plotOutput("plot",
+             width = "600px",
+             height = "500px")
+  
+  ) 
+)
+
+server <- function(input, output, session) {
+  
+  output$plot <- renderPlot({
+    
+    gestation %>% 
+      filter(input$x == .data[["order"]]) %>% 
+      ggplot(aes(.data[[input$y]])) +
+      geom_density(alpha = 0.8, fill = "steelblue", color = "black") +
+      labs(title = "Density Distribution", 
+           x = "Order", 
+           fill = "Variable of Interest") +
+      theme_minimal()
+  })
+  
+}
+
+shinyApp(ui, server)
 ```
 
 What if you want to turn on the sidebar and put the inputs there? We can do that by moving the `selectInput()` functions to the `dashboardSidebar()`.
 ```{r, eval=F, echo=T}
+ui <-  dashboardPage(
 
+  dashboardHeader(title = "Distribution of Gestation Length by Order"),
+ 
+  dashboardSidebar(
+   selectInput("x", 
+              "Select Mammalian Order",
+              choices = sort(unique(gestation$order)),
+              selected = "Afrosoricida"),    
+    
+  selectInput("y", 
+              "Select Variable of Interest",
+              choices = c("bodymass",
+                          "longevity",
+                          "gestationlength"),
+              selected = "bodymass")  
+  ),
+  
+  dashboardBody(
+    
+  helpText("Testing 123"),
+  
+  plotOutput("plot",
+             width = "600px",
+             height = "500px")
+  
+  ) 
+)
+
+server <- function(input, output, session) {
+  
+  output$plot <- renderPlot({
+    
+    gestation %>% 
+      filter(input$x == .data[["order"]]) %>% 
+      ggplot(aes(.data[[input$y]])) +
+      geom_density(alpha = 0.8, fill = "steelblue", color = "black") +
+      labs(title = "Density Distribution", 
+           x = "Order", 
+           fill = "Variable of Interest") +
+      theme_minimal()
+  })
+  
+}
+shinyApp(ui, server)
 ```
 
 Whew! We made it! We created a nice looking app with `shinydashboard`. And now we can easily see how even a basic shiny app can become messy and why it's always helpful to include lots of annotations. chatGPT can really help troubleshoot errors and is especially helpful with annotation.    
@@ -145,7 +265,43 @@ wolves %>%
 ```
 
 ```{r, eval=F, echo=T}
+ui <-  dashboardPage(
 
+  dashboardHeader(title = "Sex Composition by Wolf Population"),
+ 
+  dashboardSidebar(disable = T),
+  
+  dashboardBody(
+    
+  selectInput("x", 
+              "Select Population",
+              choices = sort(unique(wolves$pop)),
+              selected = "AK.PEN"),
+
+  helpText("Testing 123"),
+  
+  plotOutput("plot",
+             width = "600px",
+             height = "500px")
+  
+  ) 
+)
+
+server <- function(input, output, session) {
+  
+  output$plot <- renderPlot({
+    
+    wolves %>% 
+      filter(sex != "NA") %>% 
+      ggplot(aes(x = sex, fill = sex)) +
+      geom_bar(alpha = 0.8, color = "black") +
+      labs(title = "Density Distribution", 
+           x = "Sex") +
+      theme_minimal()
+  })
+  
+}
+shinyApp(ui, server)
 ```
 
 -->[Home](https://jmledford3115.github.io/datascibiol/)
