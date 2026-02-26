@@ -293,7 +293,8 @@ server <- function(input, output, session) {
     
     wolves %>% 
       filter(sex != "NA") %>% 
-      ggplot(aes(x = sex, fill = sex)) +
+      filter(input$x == .data[["pop"]]) %>% 
+      ggplot(aes(.data[[input$x]]), fill = sex) +
       geom_bar(alpha = 0.8, color = "black") +
       labs(title = "Density Distribution", 
            x = "Sex") +
