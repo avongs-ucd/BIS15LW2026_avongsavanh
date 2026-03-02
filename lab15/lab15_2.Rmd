@@ -137,8 +137,20 @@ ui <-  dashboardPage(
   ) 
 )
 
-server <- function(input, output) { }
+server <- function(input, output, session) { 
 
+  output$plot <- renderPlot({
+    
+    gestation %>% 
+      filter(input$x == .data[["order"]]) %>% 
+      ggplot(aes(.data[[input$y]])) +
+      geom_density(alpha = 0.8, fill = "steelblue", color = "black") +
+      labs(title = "Density Distribution", 
+           x = "Order", 
+           fill = "Variable of Interest") +
+      theme_minimal()
+  })
+} 
 shinyApp(ui, server)
 ```
 
@@ -173,21 +185,7 @@ ui <-  dashboardPage(
   ) 
 )
 
-server <- function(input, output, session) {
-  
-  output$plot <- renderPlot({
-    
-    gestation %>% 
-      filter(input$x == .data[["order"]]) %>% 
-      ggplot(aes(.data[[input$y]])) +
-      geom_density(alpha = 0.8, fill = "steelblue", color = "black") +
-      labs(title = "Density Distribution", 
-           x = "Order", 
-           fill = "Variable of Interest") +
-      theme_minimal()
-  })
-  
-}
+server <- function(input, output, session) { }
 
 shinyApp(ui, server)
 ```
@@ -292,16 +290,15 @@ server <- function(input, output, session) {
   output$plot <- renderPlot({
     
     wolves %>% 
-      filter(sex != "NA") %>% 
-      filter(input$x == .data[["pop"]]) %>% 
-      ggplot(aes(.data[[input$x]]), fill = sex) +
+      filter(pop == input$x) %>% 
+      ggplot(aes(x = sex, fill = sex)) +
       geom_bar(alpha = 0.8, color = "black") +
-      labs(title = "Density Distribution", 
-           x = "Sex") +
+      labs(x = "Sex", y = NULL) +
       theme_minimal()
   })
   
 }
+
 shinyApp(ui, server)
 ```
 
