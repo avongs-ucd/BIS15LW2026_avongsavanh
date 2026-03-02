@@ -78,6 +78,43 @@ shinyApp(ui, server)
 
 2. In addition to the .Rmd file, save your app as a standalone R script called `elephants.csv`.
 (readcsv function)
+```{r}
+# Below is what the standalone R script looks like in elephants.R:
+#
+#library(tidyverse)
+#library(shiny)
+#library(shinythemes)
+#library(janitor)
+#ui <- fluidPage(
+#  theme = shinythemes::shinytheme("cyborg"), 
+# titlePanel("Elephant Age/Height vs. Sex"), 
+#    selectInput("y", 
+#                "Select Variable of Interest",
+#                choices = c("age",
+#                            "height"),
+#                selected = "age"),
+#    helpText("Data source: Lee et al. (2013) Enduring consequences of early experiences: 40 year effects on survival and success among African elephants (Loxodonta africana)"),
+#    plotOutput("plot",
+#               width = "600px",
+#               height = "500px")
+#)
+#
+#server <- function(input, output, session) {
+#  
+#  output$plot <- renderPlot({
+#    elephants %>% 
+#      ggplot(aes(x = sex, y = .data[[input$y]], fill = sex)) +
+#      geom_boxplot(alpha = 0.8) +
+#      labs(title = "Distribution of Age/Height by Sex", 
+#           x = "sex", 
+#           y = input$y) +
+#      theme_minimal()
+#  })
+#}
+#
+#shinyApp(ui, server)
+```
+
 
 ## Knit and Upload
 Please knit your work as an .html file and upload to Canvas. Homework is due before the start of the next lab. No late work is accepted. Make sure to use the formatting conventions of RMarkdown to make your report neat and clean!
