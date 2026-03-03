@@ -3,12 +3,14 @@ library(shiny)
 library(shinythemes)
 library(janitor)
 
+elephants <- read_csv("data/elephants_data/elephants.csv") %>% 
+clean_names()
+
 ui <- fluidPage(
   
   theme = shinythemes::shinytheme("cyborg"), 
   
   titlePanel("Elephant Age/Height vs. Sex"), 
-  
 
     selectInput("y", 
                 "Select Variable of Interest",
