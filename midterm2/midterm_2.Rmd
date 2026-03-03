@@ -101,11 +101,6 @@ polar_bears <- polar_bears %>% #going back to the original data
 
 ```{r}
 polar_bears %>% 
-  glimpse() %>% 
-  summary() 
-```
-```{r}
-polar_bears %>% 
   summarize(across(everything(), ~ sum(is.na(.)))) 
 ```
 
@@ -155,10 +150,10 @@ polar_bears %>% #Make a line plot(s) to visualize sampling by year for both popu
   select(year) %>% 
   count(year) %>% 
   ggplot(aes(x = year, y = n)) +
-  geom_line(color = "red") +
+  geom_line() +
   geom_point(shape = 5) + 
   theme(axis.text.x = element_text(angle = 60, hjust = 1)) + 
-  labs(title = "Polar Bear Sampling by Year",
+  labs(title = "Polar Bear Sampling by Year - SB Population",
       x = "Year",
        y = "Number of Polar Bears Sampled")
 ```
@@ -168,7 +163,7 @@ polar_bears %>% #Make a line plot(s) to visualize sampling by year for both popu
   select(year) %>% 
   count(year) %>% 
   ggplot(aes(x = year, y = n)) +
-  geom_line(color = "red") +
+  geom_line() +
   geom_point(shape = 5) + 
   theme(axis.text.x = element_text(angle = 60, hjust = 1)) + 
   labs(title = "Polar Bear Sampling by Year",
@@ -217,9 +212,9 @@ polar_bears %>% #Make a line plot(s) to visualize sampling by year for both popu
   geom_line(color = "red") +
   geom_point(shape = 5) + 
   theme(axis.text.x = element_text(angle = 60, hjust = 1)) + 
-  labs(title = "Polar Bear Sampling by Year",
+  labs(title = "Fasting Polar Bear Sampling by Year - SB Population",
       x = "Year",
-       y = "Number of Polar Bears Sampled")
+       y = "Number of Fasting Polar Bears Sampled")
 ```
 ```{r}
 polar_bears %>% #Make a line plot(s) to visualize sampling by year for both populations.
@@ -230,9 +225,9 @@ polar_bears %>% #Make a line plot(s) to visualize sampling by year for both popu
   geom_line(color = "red") +
   geom_point(shape = 5) + 
   theme(axis.text.x = element_text(angle = 60, hjust = 1)) + 
-  labs(title = "Polar Bear Sampling by Year",
+  labs(title = "Fasting Polar Bear Sampling by Year - CS Population",
       x = "Year",
-       y = "Number of Polar Bears Sampled")
+       y = "Number of Fasting Polar Bears Sampled")
 ```
 
 9. (8 points) Where are the polar bears used in this study located? Make a static (not leaflet) distribution map that shows the locations of  bears by population. (hint: use `color=popn` in the `aes()` of `geom_point()`)
@@ -259,10 +254,10 @@ polar_bears_map <- get_stadiamap(bbox, maptype = "stamen_terrain", zoom = 7)
 
 ```{r}
 ggmap(polar_bears_map) +
-  geom_point(data = polar_bears, aes(lat, long, color = popn), size = 5) +
+  geom_point(data = polar_bears, aes(long, lat, color = popn), size = 0.5) +
   labs(x = "Longitude",
        y = "Latitude",
-       title = "Polar Bear Distribution")
+       title = "Polar Bear Distribution") 
 ```
 
 10. (10 points) Build a simple shiny app that shows the range of `un_creat_ratio` values for both populations. The user should be able to select the fill variable and choose between sex, mating, age_class, denning, and fasting. Please use the code chunk below so that your exam knits.
@@ -283,7 +278,7 @@ ui <- dashboardPage(
   ),
   
   dashboardBody(
-  helpText("Data source: Lee et al. (2013) Enduring consequences of early experiences: 40 year effects on survival and success among African elephants (Loxodonta africana)"),
+  helpText("Spring fasting behavior in a marine apex predator provides an index of ecosystem productivity: Global Change Biology, v. 24, no. 1, p. 410–423, https://doi.org/10.1111/gcb.13933."),
   
   plotOutput("plot",
              width = "600px",
