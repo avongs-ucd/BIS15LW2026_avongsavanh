@@ -3666,5 +3666,386 @@ ggmap(map_sharks) +
   labs(title = "Shark Incidents in San Diego County")
 ```
 
+Lab 15_1:
+## Load the Libraries  
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(shiny)
+library(shinythemes)
+library(janitor)
+```
+## Build a Basic Shiny App
+Recall that every shiny app has a ui, server, and run function. The ui is the user interface, which is what the user sees and interacts with. The server is where the code that creates the outputs goes. The run function is where we call the ui and server to run the app. 
+The basic skeleton of a shiny app looks like this:
+```{r, eval=F, echo=T}
+ui <- fluidPage(
+)
+server <- function(input, output, session) {
+}
+shinyApp(ui, server)
+```
+Let's use the built-in msleep data to build a basic app. The data are from: V. M. Savage and G. B. West. A quantitative, theoretical framework for understanding mammalian sleep. Proceedings of the National Academy of Sciences, 104 (3):1051-1056, 2007.
+```{r}
+glimpse(msleep)
+```
+Since the data are focused on sleep patterns, let's make a plot that shows the range of `sleep_total` by `vore` type.
+```{r}
+msleep %>% 
+  filter(vore != "NA") %>% 
+  ggplot(aes(x = vore, y = sleep_total, fill = vore)) +
+  geom_boxplot(alpha = 0.75) +
+  labs(title = "Sleep Total By Vore Type",
+       x = "Vore",
+       y = "Sleep Total (Hours)")
+```
+```{r}
+names(msleep)
+```
+If we want to make the plot interactive, we could allow users to select the sleep variable of interest. These include `sleep_total`, `sleep_rem`, `sleep_cycle`, and `awake.` We can use a selectInput to allow users to select the variable of interest in a drop-down menu.
+```{r, eval=F, echo=T}
+ui <- fluidPage(
+  theme = shinythemes::shinytheme("cosmo"), 
+  selectInput("y", 
+              "Select Sleep Variable",
+              choices = c("sleep_total", 
+                          "sleep_rem",
+                          "sleep_cycle",
+                          "awake"),
+              selected = "sleep_total"),
+  plotOutput("plot",
+             width = "600px",
+             height = "500px")
+)
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    msleep %>% 
+      filter(vore != "NA") %>% 
+      ggplot(aes(x = vore, 
+                 y = .data[[input$y]],
+                 fill = vore)) +
+        geom_boxplot(alpha = 0.8, color = "black") +
+        labs(title = "Sleep Variables by Vore Type", 
+             x = "Vore", 
+             fill = "Vore Type") +
+             theme_minimal()
+              })
+}
+shinyApp(ui, server)
+```
+Since we only have one interaction, we can move on to the server function. The server function is where we write the code that creates the outputs. In this case, we want to create a plot that shows the range of the selected sleep variable by vore type. We can use the `renderPlot` function to create the plot output.
+```{r, eval=F, echo=T}
+
+```
+## Running A Shiny App from an R Script
+In BIS 15L, we use RMarkdown to write code, including building shiny apps. But, in practice shiny apps are often built as stand-alone scripts. This way, even people with limited programming experience can run an app or it can be hosted online.  
+Let's take our app above and make it into a standalone R Script.  
+1. Navigate to the file tab in RStudio and click "New File" > "R Script".  
+2. Copy/paste your app into the script.  
+3. Make sure to add the libraries that are needed at the top.  
+4. Save your app as `msleep.R`.  
+
+Lab 15_2:
+## Load the Data
+For this lab, we will use data on the gestation length of eutherian mammals. The data are from: Thodoris Danis, Antonis Rokas; The evolution of gestation length in eutherian mammals. Proc. Biol. Sci. 1 October 2024; 291 (2033): 20241412. https://doi.org/10.1098/rspb.2024.1412
+```{r message=FALSE, warning=FALSE}
+gestation <- read_csv("data/Data_S1.csv") %>% 
+  clean_names() %>% 
+  rename(gestationlength=gestationength)
+```
+```{r}
+names(gestation)
+```
+```{r}
+gestation %>% 
+  distinct(order)
+```
+## Aesthetics
+There are many ways to adjust shiny apps for better visual appeal. Let's start with some more practice and then add details.  
+1. Build an app that allows users to select a mammalian `order` and a variable of interest (body mass, longevity, or gestation length) and then plots the density distribution of that variable for the selected order.
+```{r, eval=F, echo=T}
+ui <- fluidPage(
+  theme = shinythemes::shinytheme("cyborg"), 
+  titlePanel("Distribution of Gestation Length by Order"),
+  selectInput("x", 
+              "Select Mammalian Order",
+              choices = sort(unique(gestation$order)),
+              selected = "Afrosoricida"),
+  selectInput("y", 
+              "Select Variable of Interest",
+              choices = c("bodymass",
+                          "longevity",
+                          "gestationlength"),
+              selected = "bodymass"),
+  helpText("Testing 123"),
+  plotOutput("plot",
+             width = "600px",
+             height = "500px")
+)
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    gestation %>% 
+      filter(input$x == .data[["order"]]) %>% 
+      ggplot(aes(.data[[input$y]])) +
+      geom_density(alpha = 0.8, fill = "steelblue", color = "black") +
+      labs(title = "Density Distribution", 
+           x = "Order", 
+           fill = "Variable of Interest") +
+      theme_minimal()
+  })
+}
+shinyApp(ui, server)
+```
+## ui Layout with `shinydashboard`
+We have a functional app, but the layout doesn't look very nice. We can change that with many different methods (and specialized libraries), but shiny dashboards are simple to use and offer a lot of functionality for making apps look professional quickly.  
+We won't use `fluidPage()` with `shinydashboard` but rather `dashboardPage()`. A shiny dashboard contains a minimum of a header, a sidebar, and a body.
+```{r, eval=F, echo=T}
+ui <- 
+  dashboardPage(
+  dashboardHeader(title = "This is the Header"),
+  dashboardSidebar(title = "This is the Sidebar"),
+  dashboardBody() # this is where the output will go
+)
+server <- function(input, output) { }
+shinyApp(ui, server)
+```
+Let's add our ui and server elements to make a functional dashboard. We will put our ui elements in the `dashboardBody()`. For now, we will turn off the sidebar.
+```{r, eval=F, echo=T}
+ui <-  dashboardPage(
+  dashboardHeader(title = "Distribution of Gestation Length by Order"),
+  dashboardSidebar(disable = T),
+  dashboardBody(
+  selectInput("x", 
+              "Select Mammalian Order",
+              choices = sort(unique(gestation$order)),
+              selected = "Afrosoricida"),    
+  selectInput("y", 
+              "Select Variable of Interest",
+              choices = c("bodymass",
+                          "longevity",
+                          "gestationlength"),
+              selected = "bodymass"),    
+  helpText("Testing 123"),
+  plotOutput("plot",
+             width = "600px",
+             height = "500px")
+  ) 
+)
+server <- function(input, output, session) { 
+  output$plot <- renderPlot({
+    gestation %>% 
+      filter(input$x == .data[["order"]]) %>% 
+      ggplot(aes(.data[[input$y]])) +
+      geom_density(alpha = 0.8, fill = "steelblue", color = "black") +
+      labs(title = "Density Distribution", 
+           x = "Order", 
+           fill = "Variable of Interest") +
+      theme_minimal()
+  })
+} 
+shinyApp(ui, server)
+```
+Now let's add our server functions.
+```{r, eval=F, echo=T}
+ui <-  dashboardPage(
+  dashboardHeader(title = "Distribution of Gestation Length by Order"),
+  dashboardSidebar(disable = T),
+  dashboardBody(
+  selectInput("x", 
+              "Select Mammalian Order",
+              choices = sort(unique(gestation$order)),
+              selected = "Afrosoricida"),    
+  selectInput("y", 
+              "Select Variable of Interest",
+              choices = c("bodymass",
+                          "longevity",
+                          "gestationlength"),
+              selected = "bodymass"),    
+  helpText("Testing 123"),
+  plotOutput("plot",
+             width = "600px",
+             height = "500px")
+  ) 
+)
+server <- function(input, output, session) { }
+shinyApp(ui, server)
+```
+What if you want to turn on the sidebar and put the inputs there? We can do that by moving the `selectInput()` functions to the `dashboardSidebar()`.
+```{r, eval=F, echo=T}
+ui <-  dashboardPage(
+  dashboardHeader(title = "Distribution of Gestation Length by Order"),
+  dashboardSidebar(
+   selectInput("x", 
+              "Select Mammalian Order",
+              choices = sort(unique(gestation$order)),
+              selected = "Afrosoricida"),    
+  selectInput("y", 
+              "Select Variable of Interest",
+              choices = c("bodymass",
+                          "longevity",
+                          "gestationlength"),
+              selected = "bodymass")  
+  ),
+  dashboardBody(
+  helpText("Testing 123"),
+  plotOutput("plot",
+             width = "600px",
+             height = "500px")
+  ) 
+)
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    gestation %>% 
+      filter(input$x == .data[["order"]]) %>% 
+      ggplot(aes(.data[[input$y]])) +
+      geom_density(alpha = 0.8, fill = "steelblue", color = "black") +
+      labs(title = "Density Distribution", 
+           x = "Order", 
+           fill = "Variable of Interest") +
+      theme_minimal()
+  })
+}
+shinyApp(ui, server)
+```
+Whew! We made it! We created a nice looking app with `shinydashboard`. And now we can easily see how even a basic shiny app can become messy and why it's always helpful to include lots of annotations. chatGPT can really help troubleshoot errors and is especially helpful with annotation.    
+## Practice
+Let's try to build an app that allows users to explore sex composition of wolf packs by `pop`. These data are from: Brandell, Ellen E (2021), Serological dataset and R code for: Patterns and processes of pathogen exposure in gray wolves across North America, Dryad, [Dataset](https://doi.org/10.5061/dryad.5hqbzkh51)  
+1. Start by loading and exploring the data.
+```{r message=FALSE, warning=FALSE}
+wolves <- read_csv("data/wolves_data/wolves_dataset.csv") %>% clean_names()
+```
+```{r}
+names(wolves)
+```
+2. For the app, here is a faceted version of what we are looking for. We want the reactive part to be `pop` and you should try to use `shinydashboard`.
+```{r}
+wolves %>% 
+  filter(sex!="NA") %>% 
+  ggplot(aes(x=sex, fill=sex))+
+  geom_bar()+
+  facet_wrap(~pop)
+```
+```{r, eval=F, echo=T}
+ui <-  dashboardPage(
+  dashboardHeader(title = "Sex Composition by Wolf Population"),
+  dashboardSidebar(disable = T),
+  dashboardBody(
+  selectInput("x", 
+              "Select Population",
+              choices = sort(unique(wolves$pop)),
+              selected = "AK.PEN"),
+  helpText("Testing 123"),
+  plotOutput("plot",
+             width = "600px",
+             height = "500px")
+  ) 
+)
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    wolves %>% 
+      filter(pop == input$x) %>% 
+      ggplot(aes(x = sex, fill = sex)) +
+      geom_bar(alpha = 0.8, color = "black") +
+      labs(x = "Sex", y = NULL) +
+      theme_minimal()
+  })
+}
+shinyApp(ui, server)
+```
+
+Hw 15:
+## Load the data
+For this homework, we will use data on African elephants. These data are from: Phyllis C. Lee, Luc F. Bussière, C. Elizabeth Webber, Joyce H. Poole, Cynthia J. Moss; Enduring consequences of early experiences: 40 year effects on survival and success among African elephants (Loxodonta africana). Biol Lett 23 April 2013; 9 (2): 20130011. https://doi.org/10.1098/rsbl.2013.0011
+```{r}
+elephants <- read_csv("data/elephants_data/elephants.csv") %>%
+  clean_names()
+```
+
+1. There are only three variables in the data. Two are continuous (age, height) and one is categorical (sex). Build an app that compares the range of age and height by sex. Users should be able to select either age or height. Make the app neat, clean, and professional. Use `shinydashboard` to improve the aesthetics of your app.
+```{r}
+elephants %>% 
+  names()
+```
+
+
+```{r, eval=F, echo=T}
+ui <- dashboardPage(
+  
+  dashboardHeader(title = "Elephant Age/Height vs. Sex"), 
+  
+  dashboardSidebar(
+  selectInput("y", 
+              "Select Variable of Interest",
+              choices = c("age",
+                          "height"),
+              selected = "age")
+  ),
+  
+  
+  dashboardBody(
+  helpText("Data source: Lee et al. (2013) Enduring consequences of early experiences: 40 year effects on survival and success among African elephants (Loxodonta africana)"),
+  
+  plotOutput("plot",
+             width = "600px",
+             height = "500px")
+)
+)
+
+server <- function(input, output, session) {
+  
+  output$plot <- renderPlot({
+    
+    elephants %>% 
+      ggplot(aes(x = sex, y = .data[[input$y]], fill = sex)) +
+      geom_boxplot(alpha = 0.8) +
+      labs(title = "Distribution of Age/Height by Sex", 
+           x = "sex", 
+           y = input$y) +
+      theme_minimal()
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+
+2. In addition to the .Rmd file, save your app as a standalone R script called `elephants.csv`.
+(readcsv function)
+```{r}
+# Below is what the standalone R script looks like in elephants.R:
+#
+#library(tidyverse)
+#library(shiny)
+#library(shinythemes)
+#library(janitor)
+#ui <- fluidPage(
+#  theme = shinythemes::shinytheme("cyborg"), 
+# titlePanel("Elephant Age/Height vs. Sex"), 
+#    selectInput("y", 
+#                "Select Variable of Interest",
+#                choices = c("age",
+#                            "height"),
+#                selected = "age"),
+#    helpText("Data source: Lee et al. (2013) Enduring consequences of early experiences: 40 year effects on survival and success among African elephants (Loxodonta africana)"),
+#    plotOutput("plot",
+#               width = "600px",
+#               height = "500px")
+#)
+#
+#server <- function(input, output, session) {
+#  
+#  output$plot <- renderPlot({
+#    elephants %>% 
+#      ggplot(aes(x = sex, y = .data[[input$y]], fill = sex)) +
+#      geom_boxplot(alpha = 0.8) +
+#      labs(title = "Distribution of Age/Height by Sex", 
+#           x = "sex", 
+#           y = input$y) +
+#      theme_minimal()
+#  })
+#}
+#
+#shinyApp(ui, server)
+```
+
 
 
