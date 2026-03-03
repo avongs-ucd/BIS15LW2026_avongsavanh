@@ -2266,8 +2266,1405 @@ homerange %>%
   geom_boxplot()
 ```
 
+Hw 10:
+## Load the data
+Run the following code chunk to import the data. In this chunk, I am removing NA's.
+```{r message=FALSE, warning=FALSE}
+sharks <- 
+  read_csv("data/SharkIncidents_1950_2022_220302.csv", 
+           na=c("NA", "N/A", "Unknown", "NOT COUNTED", "", " ")) %>% 
+  clean_names()
+```
+## Questions
+1. Are there any "hotspots" for shark incidents in California? Show the top five counties with the most incidents.
+```{r}
+sharks %>% 
+  count(county, sort = T) %>% 
+  slice_max(n, n = 5)
+```
+2.  Make a plot that shows the total number of incidents per county.
+```{r}
+sharks %>% 
+  ggplot(aes(x = county, fill = county)) +
+  geom_bar(position = "dodge") +
+  coord_flip() +
+  labs(title = "Total Number of Incidents Per County",
+       x = "County",
+       y = "Number of Incidents")
+```
+3. Are there months of the year when incidents are more likely to occur? Make a plot that shows the total number of incidents by month. Which month has the highest number of incidents?  
+```{r}
+sharks %>% 
+  ggplot(aes(x = as_factor(month), fill = month)) +
+  geom_bar(position = "dodge") +
+  coord_flip() +
+  labs(title = "Total Number of Incidents By Month",
+       x = "Month",
+       y = "Number of Incidents")
+```
+```{r}
+sharks %>% 
+  count(month, sort = T) %>% 
+  slice_max(n, n = 5)
+```
+4. Is there a time of day when most attacks occur? Make a plot that shows the total number of incidents by time of day. Which time of day has the highest number of incidents?  
+```{r}
+sharks %>% 
+  filter(!is.na(time) & !time %in% c("early am", "afternoon")) %>%
+  ggplot(aes(x = time, fill = time)) +
+  geom_bar(position = "dodge") +
+  coord_flip() +
+  labs(title = "Total Number of Incidents By Time of Day",
+       x = "Time of Day",
+       y = "Number of Incidents")
+```
+```{r}
+sharks %>% 
+  filter(!is.na(time) & !time %in% c("early am", "afternoon")) %>%
+  count(time, sort = T) %>% 
+  slice_max(n, n = 5)
+```
+5. How do the number and types of injuries compare by county? Make a table that shows the number of injury types by county. Which county has the highest number incidents? (hint: your table should be in wide format)
+```{r}
+sharks_injuries <- sharks %>% 
+  group_by(county, injury) %>% 
+  summarize(total = n()) %>% 
+  pivot_wider(names_from = injury, values_from = total)
+sharks_injuries
+```
+```{r}
+sharks %>% 
+  count(county, sort = TRUE) %>% 
+  slice_max(n, n = 5)
+```
+6. Use the table from #5 to make a plot that shows the total number of incidents by county.
+```{r}
+sharks_injuries %>% 
+  mutate(total = sum(across(where(is.numeric)), na.rm = TRUE)) %>%
+  ggplot(aes(x = reorder(county, total), y = total, fill = county)) +
+  geom_col() +
+  coord_flip() +
+  labs(title = "Total Number of Incidents by County",
+       x = "County",
+       y = "Number of Incidents") 
+```
+7. In the data, `mode` refers to a type of activity. Which activity is associated with the highest number of incidents?
+```{r}
+sharks %>% 
+  count(mode, sort = TRUE) %>% 
+  slice_max(n, n = 5)
+```
+8. Make a plot that compares the number of incidents by activity.
+```{r}
+sharks %>% 
+  ggplot(aes(x = mode, fill = mode)) +
+  geom_bar() +
+  coord_flip() +
+  labs(title = "Incidents by Activity",
+       x = "Activity",
+       y = "Number of Incidents") 
+```
+9. Which shark species is involved in the highest number of incidents?  
+```{r}
+sharks %>% 
+  filter(!is.na(species)) %>% 
+  count(species, sort = TRUE) %>% 
+  slice_max(n, n = 5)
+```
+10. Are all incidents involving Great White's fatal? Make a plot that shows the number and types of incidents for Great White's only.  
+```{r}
+#Not all incidents involving Great White's are fatal (in fact more are non-fatal)
+sharks %>% 
+  filter(species == "White") %>% 
+  ggplot(aes(x = injury, fill = injury)) +
+  geom_bar() +
+  coord_flip() +
+  labs(title = "Number and Types of Incidents for Great White's",
+       x = "Injury Type",
+       y = "Number of Incidents")
+```
 
+Lab 11_1:
+## Data
+For these exercises, we are going to use [Gapminder](https://www.gapminder.org/data/) data on population (pop), GDP per capita (gdp), and life expectancy (lex). These data were downloaded and compiled using the `gapminder_compile.Rmd` script in the data folder.
+```{r message=FALSE, warning=FALSE}
+gap <- read_csv("data/gapminder.csv") %>% clean_names()
+```
+## Line plots
+Line plots are great when you need to show changes over time. Let's see if we can find downturns in the US economy between 2000-2025.  
+Let's start by making a clear x and y so we know what we are going to plot.
+```{r}
+gap %>% 
+  filter((year >= 2000 & year <= 2025) & country == "USA") %>% 
+  ggplot(aes(x = year, y = gdp)) +
+  geom_line() +
+  geom_point(shape = 5) + 
+  scale_x_continuous(breaks = 2000:2025, minor_breaks = NULL) +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1)) + 
+  labs(title = "GDP per Capita in the USA, 2000-2025",
+      x = "Year",
+       y = "GDP")
+```
+```{r}
+gap %>% 
+  filter((year >= 2000 & year <= 2025) & country == "USA") %>% 
+  ggplot(aes(x = year, y = gdp)) +
+  geom_line(color = "red") +
+  geom_point(shape = 5) + 
+  scale_x_continuous(breaks = seq(2000, 2025, by = 5), minor_breaks = NULL) + #minor_breaks are just extra line dividers that are not labelled (white vertical lines in this case)
+  theme(axis.text.x = element_text(angle = 60, hjust = 1)) + 
+  labs(title = "GDP per Capita in the USA, 2000-2025",
+      x = "Year",
+       y = "GDP")
+```
+## Histograms
+Histograms show the distribution of continuous variables. As students, you have seen histograms of grade distributions. A histogram `bins` the data and you specify the number of bins that encompass a range of observations. For something like grades, this is easy because the number of bins corresponds to the grades A-F. By default, R uses a formula to calculate the number of bins but some adjustment may be required.  
+What was the distribution of life expectancy in 1935?
+```{r}
+gap %>% 
+  filter(year == 1935) %>% 
+  ggplot(aes(x = lex)) +
+  geom_histogram() 
+```
+Let's rebuild the histogram, but this time we will specify the color and fill. Do a little experimentation on your own with the different colors.
+```{r}
+gap %>% 
+  filter(year == 1935) %>% 
+  ggplot(aes(x = lex)) +
+  geom_histogram(color = "black", fill = "turquoise", bins = 30) +
+  labs(title = "Distribution of Life Expectancy")
+```
+## Density plots  
+Density plots are similar to histograms but they use a smoothing function to make the distribution more even and clean looking. They do not use bins.
+```{r}
+gap %>% 
+  filter(year == 1935) %>% 
+  ggplot(aes(x = lex)) +
+  geom_density(color = "black", fill = "turquoise", alpha = 0.7) +
+  labs(title = "Distribution of Life Expectancy")
+```
+I like to see both the histogram and the density curve so I often plot them together. Note that I assign the density plot a different color.
+```{r}
+gap %>% 
+  filter(year == 1935) %>% 
+  ggplot(aes(x = lex)) +
+  geom_histogram(aes(y = after_stat(density)), color = "black", fill = "turquoise") + 
+  geom_density(color = "red")
+  labs(title = "Distribution of Life Expectancy")
+```
+## Practice
+1. Antibiotics became widely available in the 1940's. How did life expectancy change between 1930 and 1950? Let's plot the density curves for both years on the same plot. Use the `fill` aesthetic to differentiate the two years.
+```{r warning=FALSE}
+gap %>% 
+  filter(year %in% c(1930, 1950)) %>% #pull out years
+  mutate(year = factor(year)) %>% #change to factor
+  ggplot(aes(x = lex, color = year, fill = year)) +
+  geom_density(alpha = 0.3) + 
+  labs(title = "Change in Distribution of Life Expectancy between 1930 and 1950",
+       x = "Life Expectancy (years)",
+       y = NULL,
+       color = "Year",
+       fill = "Year")
+```
+## Create Categories with mutate and case_when()
+`case_when()` is a very handy function from `dplyr` which allows us to calculate a new variable from other variables. We use `case_when()` within `mutate()` to do this.`case_when()` allows us to specify multiple conditions.  
+The approximate World Bank Income Categories are:  
+- Low income: $1,100 or less
+- Lower middle income: $1,100 to $4,500
+- Upper middle income: $4,500 to $13,900
+- High income: $13,900 or more
+Let's use `case_when()` to create a new column `income_category` that categorizes countries into these income categories based on their GDP per capita in 2000.
+```{r}
+income_cat2000 <- gap %>% 
+  filter(year == 2000) %>% 
+  mutate(income_category = case_when(gdp <= 1100 ~ "low",
+                                     gdp > 1100 & gdp <= 4500 ~ "low_middle",
+                                     gdp > 4500 & gdp <= 13900 ~ "upper_middle",
+                                     gdp > 13900 ~ "high")) %>% 
+  select(country, gdp, income_category) %>% 
+  mutate(income_category = factor(income_category, 
+                                  levels = c("low",
+                                             "low_middle",
+                                             "upper_middle",
+                                             "high")))
+income_cat2000
+```
+## Practice
+1. How many countries are in each of the World Bank Income Categories as of the year 2000?
+```{r}
+income_cat2000 %>% 
+    #summarize(n_country = n_distinct(country)) %>% 
+    group_by(income_category) %>% 
+    summarize(count = n())
+```
+2. Make a bar plot showing the number of countries in each income category in the year 2000.
+```{r}
+income_cat2000 %>% 
+  drop_na(income_category) %>% #get rid of NA's
+  ggplot(aes(x = income_category, fill = income_category)) + 
+  geom_bar() + 
+  labs(title = "Number of Countries in each Income Category in 2000",
+       x = "Income Category",
+       y = "Count") +
+  theme(legend.position = "none")
+```
 
+Lab 11_2:
+## Load the libraries
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(RColorBrewer)
+library(paletteer)
+library(janitor)
+```
+```{r}
+options(scipen=999) #cancels the use of scientific notation for the session
+```
+## Data
+For this tutorial, we will use:  
+[Homerange](http://datadryad.org/resource/doi:10.5061/dryad.q5j65/1). The data are from: Tamburello N, Cote IM, Dulvy NK (2015) Energy and the scaling of animal space use. The American Naturalist 186(2):196-211. http://dx.doi.org/10.1086/682070.  
+```{r message=FALSE, warning=FALSE}
+homerange <- read_csv("data/Tamburelloetal_HomeRangeDatabase.csv", 
+                      na = c("", "NA", "\\")) %>% 
+  clean_names()
+```
+## ggplot themes
+There are many options to change the theme of your plots within ggplot. Have a look [here]https://ggplot2.tidyverse.org/reference/ggtheme.html) for a list of the themes.  
+Let's start by building a simple barplot.  
+```{r}
+p <- homerange %>% 
+  ggplot(aes(x=taxon, fill=thermoregulation))+
+  geom_bar(na.rm=T, position="dodge")+
+  theme(axis.text.x = element_text(angle = 60, hjust=1))+
+  labs(title = "Observations by Taxon in Homerange Data",
+       x = NULL,
+       y= "n",
+       fill= "Trophic Guild")
+p
+```
+Have a look at the `linedraw` theme; I am adding it as another layer.
+```{r}
+p + theme_linedraw()+
+  theme(axis.text.x = element_text(angle = 60, hjust=1))
+```
+## Practice
+1. Build a scatterplot that compares `log10_mass` and `log10_preymass`. Color by thermoregulation. Store this plot as object `q`.
+```{r}
+q <- homerange %>% 
+  drop_na(log10_mass, log10_preymass) %>% 
+  ggplot(aes(x=log10_mass, y = log10_preymass, color = thermoregulation))+
+  geom_point() + 
+  geom_smooth(method = "lm", se = F, color = "red") + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1))+
+  labs(title = "Observations by Taxon in Homerange Data",
+       x = NULL,
+       y= "n",
+       fill= "Trophic Guild")
+q
+```
+2. Use plot `q` but add the classic theme.
+```{r}
+q + theme_classic()
+```
+## Legends
+There are lots of options to manipulate legends. Have a look [here](http://www.sthda.com/english/wiki/ggplot2-legend-easy-steps-to-change-the-position-and-the-appearance-of-a-graph-legend-in-r-software).
+```{r}
+p+theme_linedraw()+
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 60, hjust=1))+
+  labs(title = "Observations by Taxon in Homerange Data",
+       x = NULL,
+       y= "n",
+       fill= "Trophic Guild")
+```
+## Not enough? Try using `ggthemes`
+There are many packages that include additional themes, one of which is [ggthemes](https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/). Some of these are nice because they are designed to mimic the look of popular publications.
+```{r}
+#install.packages("ggthemes")
+library(ggthemes)
+```
+Here is a list of the `ggthemes`
+```{r}
+ls("package:ggthemes")[grepl("theme_", ls("package:ggthemes"))]
+```
+```{r}
+p + 
+  theme_few()+
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 60, hjust=1))+
+  labs(title = "Observations by Taxon in Homerange Data",
+       x = NULL,
+       y= "n",
+       fill= "Trophic Guild")
+```
+## Practice
+1. Use plot `q` and try a theme of your choice.
+```{r}
+q + theme_excel()
+```
+## RColorBrewer
+The default colors used by ggplot are uninspiring. They don't make plots pop out in presentations or publications, and you may want to use a customized palette to make things visually consistent.  
+Access the help for `RColorBrewer`.
+```{r}
+?RColorBrewer
+```
+The thing to notice is that there are three different color palettes: 1) sequential, 2) diverging, and 3) qualitative. Within each of these there are several selections. You can bring up the colors by using `display.brewer.pal()`. Specify the number of colors that you want and the palette name.
+```{r}
+display.brewer.pal(9,"Set1") #qualitative palette
+```
+The [R Color Brewer](http://colorbrewer2.org/#type=sequential&scheme=BuGn&n=3) website is very helpful for getting an idea of the color palettes. To make things easy, use these two guidelines:
++`scale_colour_brewer()` is for points  
++`scale_fill_brewer()` is for fills  
+Here I chose the `Set2` palette. Take a moment and experiment with other options.
+```{r}
+p+scale_fill_brewer(palette = "Set1")+
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 60, hjust=1))+
+  labs(title = "Observations by Taxon in Homerange Data",
+       x = NULL,
+       y= "n",
+       fill= "Trophic Guild")
+```
+## Practice
+1. Keep using the `same `q` plot, but test out one of R Color Brewer palettes.
+```{r}
+q + scale_color_brewer(palette = "Pastel2")
+```
+## Paleteer
+You can also use `paleteer` to build a custom palette. To access the `paleteer` collection, I add it to a new object.
+```{r}
+colors <- paletteer::palettes_d_names
+```
+Now we can display the palettes. Assign the palette to `my_palette` and then build this base R bar plot. There are a lot of options; `paleteer` is a collection of popular palettes. I really like the [`ggsci` package] (https://cran.r-project.org/web/packages/ggsci/vignettes/ggsci.html)
+```{r}
+my_palette <- paletteer_d("ggsci::uniform_startrek")
+my_palette
+```
+```{r}
+barplot(rep(1,7), axes=FALSE, col=my_palette)
+```
+Now we just identify `my_palette` as part of `scale_fill_manual()`
+```{r}
+p+scale_fill_manual(values=my_palette)+
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 60, hjust=1))+
+  labs(title = "Observations by Taxon in Homerange Data",
+       x = NULL,
+       y= "n",
+       fill= "Trophic Guild")
+```
+You can use custom colors by specifying the hex code. You can find hex codes for colors using [this website](https://r-charts.com/colors/).
+```{r}
+library(scales)
+
+my_cols <- c("#66CDAA",
+             "#FFCD00FF")
+
+show_col(my_cols)
+```
+## Practice
+1. Keep using the `same `q` plot, but test out one of `paleteer` themes.
+```{r}
+my_palette2 <- paletteer_d("ggprism::pastels") #check package:palette in colors.csv
+my_palette2
+q + scale_color_manual(values=my_palette2)
+```
+## Faceting
+[Faceting](https://ggplot2-book.org/facet.html) is one of the amazing features of ggplot. It allows us to make multi-panel plots for easy comparison.  Here is a boxplot that shows the range of log10_mass by taxon, filled by thermoregulation.
+```{r}
+homerange %>% 
+  ggplot(aes(x=taxon, y=log10_mass, fill=thermoregulation))+
+  geom_boxplot()+
+  theme(axis.text.x = element_text(angle = 60, hjust=1))
+```
+`facet_wrap()` makes a ribbon of panels by a specified categorical variable and allows you to control how you want them arranged.  
+```{r}
+homerange %>% 
+  ggplot(aes(x=taxon, y=log10_mass, fill=thermoregulation))+
+  geom_boxplot()+
+  facet_wrap(~trophic_guild, ncol = 2, labeller = label_both) + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1), 
+        legend.position = "none",
+        strip.text = element_text(size = 12, face = "bold"))
+```
+```{r}
+homerange %>% 
+  ggplot(aes(x=taxon, y=log10_mass, fill=thermoregulation))+
+  geom_boxplot()+
+  facet_wrap(~trophic_guild, nrow = 2, labeller = label_both) + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1), 
+        legend.position = "none",
+        strip.text = element_text(size = 12, face = "bold"))
+```
+`facet_grid()` allows control over the faceted variable; it can be arranged in rows or columns. rows~columns. 
+```{r}
+homerange %>% 
+  ggplot(aes(x=taxon, y=log10_mass, fill=thermoregulation))+
+  geom_boxplot()+
+  facet_grid(thermoregulation~., labeller = label_both) + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1))
+```
+```{r}
+homerange %>% 
+  ggplot(aes(x=taxon, y=log10_mass, fill=thermoregulation))+
+  geom_boxplot()+
+  facet_grid(.~thermoregulation, labeller = label_both) + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1))
+```
+`facet_grid()` will also allow the comparison of two categorical variables, just remember a~b where a is rows and b is columns.  
+```{r}
+homerange %>% 
+  ggplot(aes(x=taxon, y=log10_mass, fill=thermoregulation))+
+  geom_boxplot()+
+  facet_grid(trophic_guild ~ thermoregulation, labeller = label_both) + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1))
+```
+## Practice
+1. Use facet_wrap to compare the distribution of `log10_mass` by `thermoregulation`.
+```{r}
+homerange %>% 
+  ggplot(aes(x=log10_mass, fill=thermoregulation))+
+  geom_density(fill = "steelblue", alpha = 0.3) + 
+  facet_wrap(~thermoregulation, ncol = 2) + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1))
+```
+2. Use facet_grid to compare the distribution of `log10_hra` by `locomotion` and `thermoregulation`.
+```{r}
+homerange %>% 
+  ggplot(aes(x=log10_hra)) +
+  geom_density(fill = "steelblue", alpha = 0.3)+
+  facet_grid(thermoregulation ~ locomotion) + 
+  theme(axis.text.x = element_text(angle = 60, hjust=1))
+```
+
+Hw 11:
+Let's focus our attention on data from the past 100 years, between 1925 and 2025.
+```{r message=FALSE, warning=FALSE}
+gapminder <- read_csv("data/gapminder.csv") %>% 
+  clean_names() %>% 
+  filter(between(year, 1925, 2025))
+```
+1. Use the function(s) of your choice to get an idea of the overall structure of the data, including its dimensions, column names, classes, etc. 
+```{r}
+glimpse(gapminder)
+```
+```{r}
+summary(gapminder)
+```
+2. How many countries are represented in this dataset?
+```{r}
+gapminder %>% 
+  summarize(n_country = n_distinct(country))
+```
+3. Which five countries have had the largest absolute population growth between 1925-2025? Show this as a table.
+```{r}
+gapminder_pop_growth <- gapminder %>% 
+  filter(year == 1925 | year == 2025) %>% 
+  select(country, year, pop) %>% 
+  pivot_wider(names_from = year, 
+              values_from = pop, 
+              names_prefix = "pop_") %>% 
+  mutate(pop_growth = pop_2025 - pop_1925) 
+
+gapminder_pop_growth %>% 
+  arrange(desc(pop_growth)) %>% 
+  slice_head(n = 5)
+```
+4. Make a plot that shows population growth over time for the top country you found in question #3.
+```{r}
+# Top country found in Question #3 was India. 
+gapminder %>% 
+  filter(country == "India") %>% 
+  ggplot(aes(x = year, y = pop)) +
+  geom_line(color = "steelblue") +
+  labs(title = "Population Growth Over Time (India)",
+       x = "Year",
+       y = "Population") 
+```
+5. Has global life expectancy changed between 1925 and 2025? Show the min, median, mean, and max for all countries (combined) in the dataset.
+```{r}
+gapminder %>% 
+  filter(year == 1925) %>% 
+  drop_na(lex) %>% 
+  summarize(lex_min = min(lex),
+         lex_med = median(lex),
+         lex_mean = mean(lex),
+         lex_max = max(lex))
+```
+```{r}
+gapminder %>% 
+  filter(year == 2025) %>% 
+  drop_na(lex) %>% 
+  summarize(lex_min = min(lex),
+         lex_med = median(lex),
+         lex_mean = mean(lex),
+         lex_max = max(lex))
+```
+Differences across all of these measures indicates that global life expectancy changed between 1925 and 2025. 
+6. Make a plot that shows the distribution of life expectancy for all countries in 1925 and 2025 (try using `geom_density`). What do you notice about the shift in life expectancy over time?
+```{r}
+gapminder %>% 
+  filter(year == 1925 | year == 2025) %>% 
+  mutate(year = as.factor(year)) %>% 
+  ggplot(aes(x = lex, fill = year)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Distribution of Life Expectancy in All Countries in 1925 and 2025",
+       x = "Life Expectancy (Years)",
+       y = "Density") 
+```
+The life expectancy greatly shifted over to the left over time, indicating that the life expectancy increased over time (people in 2025 are expected to have longer lifespans than people in 1925). 
+7. We are interested in the relationship between per capita GDP and life expectancy; i.e. does having more money help you live longer in 2025? Show this as a plot. (Suggestion! Remove Monaco as an extreme outlier.)
+```{r}
+gapminder %>% 
+  filter(year == 2025, country != "Monaco") %>% 
+  ggplot(aes(x = gdp, y = lex)) +
+  geom_point(color = "steelblue") +
+  geom_smooth(method = "lm", se = F, color = "red") +
+  labs(title = "GDP per Capita vs. Life Expectancy (2025)",
+       x = "GDP per Capita",
+       y = "Life Expectancy") 
+```
+8. Which five countries have had the highest absolute GDP per capita growth over the past 50 years? Show this as a table. (Suggestion! Remove Monaco as an extreme outlier.)
+```{r}
+gapminder_gdp_growth <- gapminder %>% 
+  filter(year == 1975 | year == 2025, country != "Monaco") %>% #past 50 years = 1975-2025
+  select(country, year, gdp) %>% 
+  pivot_wider(names_from = year,
+              values_from = gdp, 
+              names_prefix = "gdp_") %>% 
+  mutate(gdp_growth = gdp_2025 - gdp_1975)  
+
+gapminder_gdp_growth %>% 
+  arrange(desc(gdp_growth)) %>% 
+  slice_head(n = 5)
+```
+9. How does per capita GDP growth compare between these same five countries over the past 50 years? Show this as a plot.
+```{r}
+# Top 5 Countries: Singapore, Ireland, Luxembourg, Guyana, Norway  
+gapminder %>% 
+  filter((country == "Singapore" |
+         country == "Ireland" |
+         country == "Luxembourg" |
+         country == "Guyana" |
+         country == "Norway"),
+         year >= 1975) %>% 
+  ggplot(aes(x = year, y = gdp, color = country)) +
+  geom_line() +
+  labs(title = "GDP per Capita Growth (1975-2025)",
+       x = "Year",
+       y = "GDP per Capita") 
+```
+
+Lab 13_1:
+## Install the package `naniar`
+The [naniar](https://naniar.njtierney.com/) package includes some useful tools to manage NA's.
+```{r}
+#install.packages("naniar")
+```
+## Load the libraries
+```{r message=FALSE, warning=FALSE}
+library("tidyverse")
+library("naniar")
+library("janitor")
+```
+## Review
+When working with "wild" data, dealing with NA's is a fundamental part of the data cleaning process. Data scientists spend much of their time cleaning and transforming data- including managing NA's. There isn't a single approach that will always work so you need to be careful about using replacement strategies across an entire data set. And, as the data sets become larger NA's can become trickier to deal with.  
+For the following, we will use life history data for mammals. The [data](http://esapubs.org/archive/ecol/E084/093/) are from:  
+**S. K. Morgan Ernest. 2003. Life history characteristics of placental non-volant mammals. Ecology 84:3402.**  
+## Load the mammals life history data and clean the names  
+```{r message=FALSE, warning=FALSE}
+life_history <- read_csv("data/mammal_lifehistories_v3.csv") %>% clean_names()
+```
+## Are there any NA's?
+Sometimes using one or more of the summary functions can give us clues to how the authors have represented missing data. This doesn't always work, but it is a good place to start.  
+```{r}
+life_history %>% 
+  glimpse()
+```
+```{r}
+life_history %>% 
+  summary()
+```
+## Where are the NA's?
+This will give you a quick summary of the number of NA's in each variable. Notice that, at least for now, it doesn't look like there are NA's in most variables because they are still represented by -999.
+```{r}
+life_history %>% 
+  summarize(across(everything(), ~ sum(is.na(.))))
+```
+Here we look for all of the -999's.
+```{r}
+life_history %>% 
+  summarize(across(everything(), ~ sum(.==-999)))
+```
+## Dealing with NA's using `read_csv()`
+In the case of `-999` as NA, we can use `read_csv` to replace these values when we import the data. But, I only do this once I understand how NA's are represented in the data. Sometimes, they are represented in multiple ways.
+```{r message=FALSE, warning=FALSE}
+life_history_no_nas <- 
+  read_csv("data/mammal_lifehistories_v3.csv", na="-999") %>% 
+  clean_names()
+```
+Rechecking for NA's. Now we see that there are NA's in many of the variables.
+```{r}
+life_history_no_nas %>% 
+  summarize(across(everything(), ~ sum(is.na(.))))
+```
+## Did we catch them all?
+Sometimes it can be helpful to do a quick scan using view() or glimpse() to see if there are any other odd values that might represent NA's. Notice that `not measured` is used in `newborn`.
+```{r}
+glimpse(life_history_no_nas)
+```
+```{r}
+summary(life_history_no_nas)
+```
+Notice that `max_life` has no NA's. Does that make sense? How likely is it that we know the lifespan for all of the species in the data set?
+```{r}
+hist(life_history_no_nas$max_life)
+```
+```{r}
+life_history_no_nas %>% 
+  filter(max_life == 0) %>% 
+  select(order, family, genus, species, max_life)
+```
+Let's use `mutate()` and use `na_if()` to replace 0's with NA's in `max_life`. This chunk allows us to address problems in a single variable.
+```{r}
+life_history_no_nas <- life_history_no_nas %>% 
+  mutate(max_life = na_if(max_life, 0))
+```
+## `naniar`
+[naniar](https://naniar.njtierney.com/) is a package that manages NA's. Many of the functions it performs can also be performed using tidyverse functions, but it provides some nice alternatives.  
+`miss_var_summary` provides a summary of NA's across the data frame.
+```{r}
+miss_var_summary(life_history_no_nas)
+```
+A unique feature of `naniar` is that it can produce visuals to help evaluate NA's. Here we use `gg_miss_var` to visualize the number of NA's in each variable.
+```{r}
+life_history_no_nas %>% 
+  gg_miss_var()
+```
+We can also use `geom_miss_point()` to visualize where NA's are located in a scatter plot. Here we see that there are NA's in `wean_mass` across the range of `mass`.
+```{r}
+life_history_no_nas %>% 
+  ggplot(aes(x = log10(mass), y = log10(wean_mass))) +
+  geom_point() + 
+  geom_miss_point() 
+```
+We can also use `miss_var_summary` with `group_by()`. This helps us better evaluate where NA's are in the data.
+```{r}
+life_history_no_nas %>% 
+  group_by(order) %>% 
+  miss_var_summary(order = T)
+```
+`naniar` has nice replace functions which will allow you to precisely control which values you want replaced with NA's in each variable. This is a nice alternative to `mutate()` and `na_if()`.  
+```{r}
+life_history %>% #going back to the original data
+  replace_with_na(replace = list(newborn = "not measured", 
+                                 weaning= -999, 
+                                 wean_mass= -999, 
+                                 afr= -999, 
+                                 max_life= 0, 
+                                 litter_size= -999, 
+                                 gestation= -999, 
+                                 mass= -999)) %>% 
+miss_var_summary()
+```
+You can also use naniar to replace a specific value (like -999) with NA across the entire data set.  
+```{r}
+life_history %>% 
+  replace_with_na_all(condition = ~.x == -999) %>% 
+  miss_var_summary()
+```
+Finally, naniar has some built-in examples of common values or character strings used to represent NA's. The chunk below will use these built-in parameters to replace NA's across the entire data set.
+```{r}
+common_na_strings
+```
+```{r}
+common_na_numbers
+```
+```{r}
+life_history %>% 
+  replace_with_na_all(condition = ~.x %in% c(common_na_strings, common_na_numbers)) %>% 
+  mutate(newborn = na_if(newborn, "not measured"))
+```
+## Practice
+Let's practice evaluating NA's in a large data set. The data are compiled from [CITES](https://cites.org/eng). This is the international organization that tracks trade in endangered wildlife. You can find information about the data [here](https://www.kaggle.com/cites/cites-wildlife-trade-database).  
+Some key information:  
+[country codes](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)  
+1. Import the data and do a little exploration. Be sure to clean the names if necessary.
+```{r message=FALSE, warning=FALSE}
+cites <- read_csv("data/cites.csv") %>% 
+clean_names()
+```
+```{r}
+cites %>% 
+  glimpse()
+```
+2. Use `naniar` to summarize the NA's in each variable.
+```{r}
+cites %>% 
+  miss_var_summary()
+```
+3. Try using `group_by()` with `naniar`. Look specifically at `class` and `exporter_reported_quantity`. For which taxonomic classes do we have the highest number of missing export data?
+```{r}
+cites %>% 
+  select(class, exporter_reported_quantity) %>% 
+  group_by(class) %>% 
+  miss_var_summary() %>% 
+  arrange(desc(n_miss))
+```
+
+Lab 13_2:
+## Load the libraries
+```{r, message = FALSE}
+library("tidyverse")
+library("janitor")
+library("lubridate") #this will help us manage dates
+```
+## Joining Files
+Sometimes data we need is stored in a separate file or becomes available later and we need to join it to our existing data in order to work with it. Let's use an easy example to explore some of the different types of joins. This section was based on the excellent example provided by [Holly Emblem](https://hollyemblem.medium.com/joining-data-with-dplyr-in-r-874698eb8898).  
+Let's assume we have a database of customers and their purchases.
+```{r message=FALSE, warning=FALSE}
+table_A = read_csv("data/Table_A.csv")
+table_B = read_csv("data/Table_B.csv")
+```
+```{r}
+table_A
+```
+```{r}
+table_B
+```
+The general syntax for joins is...
+```{r}
+#join_type(firstTable, secondTable, by=columnTojoinOn)
+```
+`inner_join`  
+Where did customers 3 and 4 go? Since they are not on both tables, they were dropped. So, `inner_join` only keeps the rows that have matching values in both tables; it is very strict about matching.
+```{r}
+inner_join(table_A, table_B, by = "customer_ID")
+```
+`left_join`
+Where did customer 4 go? Notice the missing data for customer 3. So, `left_join` keeps all the rows in the first table and only the matching rows in the second table. If there is no match, it fills in with NA.
+```{r}
+left_join(table_A, table_B, by = "customer_ID")
+```
+`right_join`
+Where did customer 3 go? Notice the missing data for customer 4. `right_join` does the opposite of `left_join`. It keeps all the rows in the second table and only the matching rows in the first table. If there is no match, it fills in with NA.
+```{r}
+right_join(table_A, table_B, by = "customer_ID")
+```
+`full_join`
+`full_join` keeps all the rows in both tables and fills in with NA where there is no match.
+```{r}
+full_join(table_A, table_B, by = "customer_ID")
+```
+`anti_join`
+Provides the rows in the first table for which there are not matching values in the second table.
+```{r}
+anti_join(table_A, table_B, by = "customer_ID") #used for trouble shooting problematic joins 
+```
+## Dates
+The `lubridate` package was created to deal with dates of all types. There are many useful functions in `lubridate`, most of which are designed to make working with dates easier. For example, you can easily get the current date and time with `today()` and `now()`.
+```{r}
+today()
+```
+```{r}
+now()
+```
+There are many different options for working with dates and date-times in lubridate including `ymd`, `mdy`, `dmy`, `mdy_hms`, `ymd_hms`. The formats below are common examples of how you might see dates in your data.
+```{r}
+dateformat1 <- "20200922"
+dateformat2 <- "09-22-2020"
+dateformat3 <- "22/09/2020"
+dateformat4 <- "09-22-2020 17:00:00"
+dateformat5 <- "20200922 170000"
+```
+## Converting dates 
+We can convert each of the examples above using lubridate.
+```{r}
+ymd(dateformat1)
+```
+```{r}
+mdy(dateformat2)
+```
+```{r}
+dmy(dateformat3)
+```
+```{r}
+mdy_hms(dateformat4)
+```
+```{r}
+ymd_hms(dateformat5)
+```
+## Practice
+For this practice, we will use data from my research on _Usofila_ spiders. These spiders live mostly in caves and the data were collected by building a database of all the known museum specimens in the US. There are two files: 1. spider_records.csv which contains all the records of spiders and 2. spiders_locations.csv which contains the lat/long for each record. An accession number is a unique identifier for each specimen.
+1. Load the two files as separate dataframes. Make sure to clean the column names.
+```{r message=FALSE, warning=FALSE}
+records = read_csv("data/spider_records.csv") %>% clean_names()
+locations = read_csv("data/spiders_locations.csv") %>% clean_names()
+```
+```{r, message = FALSE}
+records
+```
+```{r}
+locations
+```
+2. Join the files using an appropriate key and join type.
+```{r}
+left_join(records, locations, by = "accession")
+```
+```{r}
+names(records)
+```
+3. Convert the date column to a date format using lubridate.
+```{r}
+records %>% 
+  mutate(date = dmy(date))
+```
+4. Save your final data to a `.csv`.
+```{r}
+write.csv(records, file = "spiders_with_locs.csv", row.names = F)
+```
+
+Hw 13:
+## Data
+For this homework, we will use `amniota` data from: Myhrvold N, Baldridge E, Chan B, Sivam D, Freeman DL, Ernest SKM (2015). “An amniote life-history database to perform comparative analyses with birds, mammals, and reptiles.” _Ecology_, *96*, 3109. doi: 10.1890/15-0846.1 (URL: https://doi.org/10.1890/15-0846.1).
+```{r message=FALSE, warning=FALSE}
+amniota <- read_csv("data/amniota.csv") %>% 
+  clean_names()
+```
+1. Do some exploratory analysis of the `amniota` data set. Use the function(s) of your choice. Try to get an idea of how NA's are represented in the data.
+```{r}
+amniota %>% 
+  glimpse() 
+```
+```{r}
+amniota %>% 
+  summary() 
+```
+2. Make any necessary replacements in the data such that all NA's appear as "NA". 
+```{r}
+amniota <- amniota %>% 
+  replace_with_na_all(condition = ~.x == -999) 
+```
+3. How many total NA's are in the data set? Use the package `naniar` to produce a summary, including percentages, of missing data in each column for the `amniota` data.
+```{r}
+amniota %>% 
+  miss_var_summary()
+```
+4. Double check your replacement using `summary`. Do you see any other potential issues? If so, fix them.
+```{r}
+amniota %>% 
+  summary()
+```
+```{r}
+amniota <- amniota %>% 
+  replace_with_na_all(condition = ~.x == 0) %>% 
+  replace_with_na(replace = list(
+    female_maturity_d = -30258.71100
+  ))
+```
+5. Use `naniar` to visualize the number of NA's in each variable. Which variables have the most NA's?
+```{r}
+amniota %>% 
+  gg_miss_var()
+```
+The variables with the most NA's are subspecies (21322) and female_body_mass_at_maturity_g (21318). 
+6. Calculate the number of NAs in the `egg_mass_g` column sorted by taxonomic class; i.e. how many NA's are present in the `egg_mass_g` column in birds, mammals, and reptiles? Does this results make sense biologically? How do these results affect your interpretation of NA's?
+```{r}
+amniota %>%
+  select(class, egg_mass_g) %>% 
+  group_by(class) %>%
+  miss_var_summary() %>% 
+  arrange(desc(pct_miss))
+```
+These results make sense as the Mammalia class (mammmals) do have 100% NA's. Mammals are species that do not lay eggs, so it makes sense that there is no egg mass measured for them. These results showcase to me that NA's don't always mean that entries are sometimes forgotten, but sometimes that they can be used to say that a certain parameter don't apply to certain entries. 
+
+Lab 14_1:
+## Vector vs. Raster Data
+In lab we are using vector data, which represents geographic features as points, lines, and polygons. Raster data represents space as a regular grid of cells (pixels), where each cell stores a value for a variable (elevation, precipitation, temperature, reflectance, etc.).  
+- Vector data is often used for discrete features (e.g., locations, roads, rivers, political boundaries).
+- Raster data is often used for continuous variables (e.g., elevation, temperature, land cover).  
+## Packages
+There are many packages and techniques for working with spatial data in R. We will cover only some of the basics. One package is ggmap, which allows us to retrieve and display base maps from services such as Google Maps and OpenStreetMap (and related tile providers). It integrates with ggplot2, meaning maps and spatial data can be layered using the same grammar of graphics framework.  
+We will also use leaflet, which is a package for creating interactive maps. It allows you to create maps that users can zoom and pan, and it supports a wide range of map tiles and markers.  
+## Load the libraries
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(janitor)
+```
+## Install and load the `ggmap` and `leaflet` packages  
+```{r message=FALSE, warning=FALSE}
+#install.packages("ggmap")
+library(ggmap)
+#install.packages("leaflet")
+library(leaflet)
+```
+## Register for a Stamen API Key
+Because some of these maps are proprietary, you will need an API key to use them. We are going to use Stamen maps which requires registration, but no payment.   
+Start by making an account with [Stadia Maps](https://client.stadiamaps.com/signup/). You need to add a "property" which is just a name for your project. Once you have an account, you can get an API key. Use the following code to register your key.  
+```{r}
+#register_stadiamaps("YOUR API KEY HERE", write = FALSE)
+register_stadiamaps("efbbad0c-b639-4a5e-bc42-a820b574fc9b", write = FALSE)
+```
+## Load the Data
+Let's load our processed spider data from the previous lab. There is an error in one of the coordinates that we will also fix here.
+```{r message=FALSE, warning=FALSE}
+spiders <- read_csv("data/spiders_with_locs.csv")%>% 
+  clean_names() %>% 
+  filter(latitude<=42)
+```
+## Create Base Map
+Our goal is to plot the spiders locations from the columns which contain the latitude and longitude. First, we need to get a base map for plotting our points on. We could plot them without a base map, but that wouldn't give us any context as to where they are in space. To get a base map we specify a min and max of each x and y coordinate, and create a bounding box.  
+We set the bounding box to a little outside our min and max locations with `f = 0.03`. This gives an extra 3% padding to the bounding box.
+`summary()` gives us our min and max.
+```{r}
+spiders %>% 
+  select(latitude, longitude) %>% 
+  summary()
+```
+Now we set the bounding box. We use the min and max values for latitude and longitude to set the range.  
+```{r}
+lat <- c(34.67, 41.80)
+long <- c(-124.1, -115.5)
+bbox <- make_bbox(long, lat, f = 0.03)
+```
+Let's get a base map for our bounding box area. There are several different map [styles](https://docs.stadiamaps.com/themes/)
+```{r}
+map1 <- get_stadiamap(bbox, maptype = "stamen_terrain", zoom = 7)
+```
+Have a look at the map.  
+```{r}
+ggmap(map1)
+```
+## Adding Points to Base Map
+To add our points we only need to specify the x and y location similar to how we made plots in `ggplot.` 
+```{r}
+ggmap(map1) + 
+  geom_point(data = spiders, aes(longitude, latitude), size = 0.75, color = "black", alpha = 0.8) +
+  labs(x = "Longitude",
+       y = "Latitude",
+       title = "California Usofila Records")
+```
+## Leaflet
+If we want to make an interactive map, we can use the `leaflet` package. This allows us to zoom and pan around the map, and we can add popups with information about each point.  
+Get the min/max from the data.
+```{r}
+spiders %>% 
+  summarize(
+  lon_min = min(longitude, na.rm = T),
+  lon_max = max(longitude, na.rm = T),
+  lat_min = min(latitude, na.rm = T),
+  lat_max = max(latitude, na.rm = T))
+```
+Add this to four new variables which will be used to create the bounding box in leaflet.
+```{r}
+lon_min <- -124.13
+lon_max <- -115.49
+lat_min <- 34.67
+lat_max <- 41.8 
+```
+Build the interactive map using Stadia maps.
+```{r}
+leaflet(spiders) %>% 
+  addProviderTiles(providers$Stadia.StamenTerrain) %>% 
+  addCircleMarkers(
+    lng = ~longitude,
+    lat = ~latitude, 
+    radius = 2,
+    stroke = FALSE,
+    fillOpacity = 0.7
+  ) %>% 
+  addScaleBar(position = "bottomleft") %>% 
+  fitBounds(lng1 = lon_min,
+            lat1 = lat_min,
+            lng2 = lon_max,
+            lat2 = lat_max)
+```
+Build the same interactive map using default OpenStreet maps.
+```{r}
+leaflet(spiders) %>% 
+  addTiles() %>% 
+  addProviderTiles(providers$Stadia.StamenTerrain) %>% 
+  addCircleMarkers(
+    lng = ~longitude,
+    lat = ~latitude, 
+    radius = 2,
+    stroke = FALSE,
+    fillOpacity = 0.7
+  ) %>% 
+  addScaleBar(position = "bottomleft") %>% 
+  fitBounds(lng1 = lon_min,
+            lat1 = lat_min,
+            lng2 = lon_max,
+            lat2 = lat_max)
+```
+## Practice
+For this practice we will use data on the distribution of grizzly bears in Alaska. The data are from: https://rcweb.dartmouth.edu/~f002d69/workshops/index_rspatial.html) represent sightings of grizzly bears (Ursos arctos) in Alaska.
+1. Load the `grizzly` data and evaluate its structure.  
+```{r message=FALSE, warning=FALSE}
+grizzly <- read_csv("data/bear-sightings.csv")
+```
+```{r}
+grizzly %>% 
+  summary()
+```
+2. Use the range of the latitude and longitude to build an appropriate bounding box for your map.  
+```{r}
+lon_min <- -166.2
+lon_max <- -131.3
+lat_min <- 55.02
+lat_max <- 70.37
+```
+3. Load a map from `stadiamaps` in a `stamen_terrain` projection and display the map.
+```{r}
+lat <- c(55.02, 70.37)
+lon <- c(-166.2, -131.3)
+  bbox <- make_bbox(lon, lat, f = 0.03)
+```
+```{r}
+map1 <- get_stadiamap(bbox, maptype = "stamen_terrain", zoom = 8)
+```
+4. Build a final map that overlays the recorded observations of grizzly bears in Alaska.  
+```{r}
+ggmap(map1) +
+  geom_point(data = grizzly, aes(longitude, latitude), size = 0.8) +
+  labs(x = "Longitude",
+       y = "Latitude",
+       title = "Alaska Grizzly Bear Records")
+```
+
+Lab 14_2:
+## Shiny
+Shiny is an R package which makes it easy to design interactive web applications without knowing any html, css, or java script. First we need to make sure we have shiny installed and loaded.
+```{r, echo=FALSE}
+#install.packages("shiny")
+library("shiny")
+```
+We will also need the `tidyverse`, `janitor`, and `palmerpenguins` to run the examples.
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library("tidyverse")
+library("palmerpenguins")
+library("janitor")
+```
+## Shiny Example
+Shiny apps can be designed to do almost anything you can imagine. They are very useful for making specialized tools for specific needs in business and research, or just for fun! Let's run a basic example on our computer. Type the following into the R console. You should have the file `plot_iris.R` in your working directory. Use the drop down menus to change the x and y axes on the plot.
+```{r, eval=F, echo=T}
+#runApp("plot_iris.R")
+```
+## Built-in Examples
+There are many built-in examples in shiny. You can run them by typing the following into the R console. Examples: "01_hello", "02_text", "03_reactivity", "04_mpg", "05_sliders", "06_tabsets", "07_widgets", "08_html", "09_upload", "10_download", "11_timer"
+```{r}
+#runExample("04_mpg")
+```
+## Other Examples
+Shiny apps can be very powerful and complex. Here are some examples of shiny apps that have been built by the [life science community](https://www.appsilon.com/post/r-shiny-in-life-sciences-examples#dashboard-2).  
+## Shiny App Skeleton
+A shiny app consists of a user interface (ui) function, server function, and run function.
+1.  The `ui` function controls the user inputs and the way the app will be displayed; i.e. this controls how your app looks.  
+2.  The `server` function is the part of the app which takes the values of the user inputs, performs calculations and/or makes plots, and prepares the outputs for display; i.e. this controls how your app works.
+3.  The `run` function combines the ui and server function to run the app.  
+Below is a bare bones shiny app. You can get this code snippet by typing `shinyapp` + shift + tab. It doesn't do anything because we haven't created any inputs with the ui or any outputs with the server.  
+```{r, eval=F, echo=T}
+library(shiny)
+ui <- fluidPage(
+)
+server <- function(input, output, session) { }
+shinyApp(ui, server)
+```
+For the rest of the lab we will work on building an example app using `palmerpenguins`.
+## Shiny Inputs
+There are many types of inputs in shiny, see the [shiny cheat sheet](https://shiny.posit.co/r/articles/start/cheatsheet/). Our example app uses `selectInput()`, which takes a set of predefined choices and supplies them to the user in a drop down menu format. We are working with the `palmerpenguins` data set, so we want the selections to be the column names of the data frame.  
+Let's get the names of the `palmerpenguins` data frame and add them as a `selectInput()` to our ui. `selectInput()` takes several arguments including the label that the server function will use, the label that will display to the user, the selection choices, and the initially selected choice. I always start by making a simple example plot so I know where I am going. 
+```{r}
+penguins %>% 
+  ggplot(aes(x = bill_length_mm, y = body_mass_g)) +
+  geom_point(na.rm = T)
+```
+Since we will make a scatterplot, let's focus on the continuous variables. The first step is to setup the x variable input.
+```{r, eval=F, echo=T}
+library(shiny)
+ui <- fluidPage(
+  selectInput("x", 
+              "Select X Variable",
+              choices = c("bill_length_mm",
+                          "bill_depth_mm",
+                          "flipper_length_mm",
+                          "body_mass_g"),
+              selected = "bill_length_mm")
+)
+server <- function(input, output, session) { }
+shinyApp(ui, server)
+```
+Let's repeat the process for the y variable input.
+```{r, eval=F, echo=T}
+library(shiny)
+ui <- fluidPage(
+  selectInput("x", 
+              "Select X Variable",
+              choices = c("bill_length_mm",
+                          "bill_depth_mm",
+                          "flipper_length_mm",
+                          "body_mass_g"),
+              selected = "bill_length_mm"),
+  selectInput("y", 
+              "Select Y Variable",
+              choices = c("bill_length_mm",
+                          "bill_depth_mm",
+                          "flipper_length_mm",
+                          "body_mass_g"),
+              selected = "bill_length_mm"),
+)
+server <- function(input, output, session) { }
+shinyApp(ui, server)
+```
+## Server Side
+Great, we now have our user inputs set up! Next we need to work with those inputs so R can make the plot. This can be the tricky part. The processing is done in the server function. The ui passes the names of our choices via an object called `inputs` to the server function. We need to access our inputs by their names with the `$` symbol. To get the x input we type `input$x` and y is `input$y`.  
+All reactive inputs need to be wrapped in a reactive environment called a reactive function. Reactivity is the core of shiny. Let's wrap our reactive input values in a reactive function on the server side and run our app as a test. What happens? Are we doing anything with the inputs yet?  
+```{r, eval=F, echo=T}
+library(shiny)
+ui <- fluidPage(
+  selectInput("x", 
+              "Select X Variable",
+              choices = c("bill_length_mm",
+                          "bill_depth_mm",
+                          "flipper_length_mm",
+                          "body_mass_g"),
+              selected = "bill_length_mm"),
+  selectInput("y", 
+              "Select Y Variable",
+              choices = c("bill_length_mm",
+                          "bill_depth_mm",
+                          "flipper_length_mm",
+                          "body_mass_g"),
+              selected = "bill_length_mm"),
+)
+server <- function(input, output, session) {
+  reactive({input$x
+            input$y
+            })
+}
+shinyApp(ui, server)
+```
+## Shiny Outputs
+So we have our inputs in a reactive environment, but we want to actually use those inputs to make a plot and display it on the ui. To make and display the plot, we need to save it to a named output object that the ui can use. To do this we use the reactive expression `renderPlot()` and access the plot on the ui side with `plotOutput()`. The inputs from `selectInput()` are character strings, so we need to use `aes_string()` in `ggplot`.
+```{r, eval=F, echo=T}
+library(shiny)
+ui <- fluidPage(
+  selectInput("x", 
+              "Select X Variable",
+              choices = c("bill_length_mm",
+                          "bill_depth_mm",
+                          "flipper_length_mm",
+                          "body_mass_g"),
+              selected = "bill_length_mm"),
+  selectInput("y", 
+              "Select Y Variable",
+              choices = c("bill_length_mm",
+                          "bill_depth_mm",
+                          "flipper_length_mm",
+                          "body_mass_g"),
+              selected = "bill_length_mm"),
+  plotOutput("plot",
+             width = "500px",
+             height = "400px")
+)
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    ggplot(data = penguins,
+           aes_string(x = input$x,
+                      y = input$y,
+                      color = "species")) +
+      geom_point(na.rm = T)
+            })
+}
+shinyApp(ui, server)
+```
+```{r}
+library(shiny)
+ui <- fluidPage(
+  selectInput("x", 
+              "Select X Variable",
+              choices = c("bill_length_mm",
+                          "bill_depth_mm",
+                          "flipper_length_mm",
+                          "body_mass_g"),
+              selected = "bill_length_mm"),
+  selectInput("y", 
+              "Select Y Variable",
+              choices = c("bill_length_mm",
+                          "bill_depth_mm",
+                          "flipper_length_mm",
+                          "body_mass_g"),
+              selected = "bill_length_mm"),
+  checkboxInput("show_lm",
+                "Show best-fit line(lm)",
+                value = FALSE),
+  plotOutput("plot",
+             width = "500px",
+             height = "400px")
+)
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    ggplot(penguins,
+           aes(x = .data[[input$x]],
+               y = .data[[input$y]])) +
+      geom_point(na.rm = T) +
+      if (input$show_lm)
+        geom_smooth(method = "lm", se = F, na.rm = T)
+      else 
+        NULL
+            })
+}
+shinyApp(ui, server)
+```
+## Practice
+1. Please load the data as a new object `homerange` and have a look at the column names.
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+homerange <- read_csv("data/Tamburelloetal_HomeRangeDatabase.csv")
+```
+```{r}
+homerange %>% 
+  ggplot(aes(x = locomotion,
+             fill = trophic.guild)) +
+  geom_bar(position = "dodge")
+```
+```{r}
+names(homerange)
+```
+2.  Build a shiny app that produces a barplot that explores `locomotion` type with a fill reaction for the variables `trophic_guild` and `thermoregulation`.
+```{r, eval=F, echo=T}
+library(shiny)
+ui <- fluidPage(
+  selectInput("x", 
+              "Select Fill Variable",
+              choices = c("trophic.guild", #clean_names for trophic_guild 
+                          "thermoregulation"),
+              selected = "trophic.guild"),
+  plotOutput("plot",
+             width = "500px",
+             height = "400px")
+)
+server <- function(input, output, session) {
+  output$plot <- renderPlot({
+    ggplot(data = homerange,
+           aes_string(x = "locomotion",
+                      fill = input$x)) +
+      geom_bar(position = "dodge", alpha = 0.8, color = "black") +
+      labs(x = NULL, y = NULL, fill = "Fill Variable")
+            })
+}
+shinyApp(ui, server)
+```
+
+Hw 14:
+## Load the libraries  
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(janitor)
+library(ggmap)
+library(leaflet)
+``` 
+## API Key
+```{r}
+register_stadiamaps("efbbad0c-b639-4a5e-bc42-a820b574fc9b", write = FALSE)
+```
+## Load the Data
+For this homework, we will use the shark attack data to visualize where the attacks occurred. The [data](https://catalog.data.gov/dataset/shark-incident-database-california-56167) are from: State of California- Shark Incident Database.  
+```{r message=FALSE, warning=FALSE}
+sharks <- read_csv("data/SharkIncidents_1950_2022_220302.csv") %>% 
+  clean_names() %>% 
+  filter(longitude !="NA" & latitude !="NA") %>% # pulling out NA locations
+  mutate(longitude = as.numeric(longitude)) # converting longitude to numeric
+```
+1. Use the range of the latitude and longitude to build an appropriate bounding box for your map.
+```{r}
+sharks %>% 
+  summary()
+```
+```{r}
+lon_min <- -124.7
+lon_max <- -117.1
+lat_min <- 32.59
+lat_max <- 41.56
+```
+```{r}
+lat <- c(lat_min, lat_max)
+lon <- c(lon_min, lon_max)
+  bbox <- make_bbox(lon, lat, f = 0.03)
+```
+2. Load a map from `stamen` in a terrain style projection and display the map.  
+```{r, echo=T}
+map_sharks <- get_stadiamap(bbox, maptype = "stamen_terrain", zoom = 7)
+ggmap(map_sharks)
+```
+3. Build a map that overlays the recorded observations of shark attacks in California.  
+```{r}
+ggmap(map_sharks) +
+  geom_point(data = sharks, aes(longitude, latitude),  color = "red", alpha = 0.8, size = 0.8) +
+  labs(x = "Longitude",
+       y = "Latitude",
+       title = "California Shark Incidents (1950-2022)")
+```
+4. Build a map that only shows the fatalities.  
+```{r}
+fatalities <- sharks %>% 
+  filter(injury == "fatal")
+
+ggmap(map_sharks) + 
+  geom_point(data = fatalities, aes(longitude, latitude), size = 2, color = "red") +
+  labs(title = "California Fatal Shark Incidents (1950-2022)")
+```
+5. Build the same map (fatalities only), but this time make it interactive using `leaflet`. Also, color the points red.  
+```{r}
+leaflet(fatalities) %>% 
+  addTiles() %>% 
+  addProviderTiles(providers$Stadia.StamenTerrain) %>% 
+  addCircleMarkers(
+    lng = ~longitude,
+    lat = ~latitude, 
+    radius = 2,
+    color = "red",
+    stroke = FALSE,
+    fillOpacity = 0.7
+  ) %>% 
+  addScaleBar(position = "bottomleft") %>% 
+  fitBounds(lng1 = lon_min,
+            lat1 = lat_min,
+            lng2 = lon_max,
+            lat2 = lat_max)
+```
+6. Which county has the highest number of recorded shark attacks? Make a map that only shows the attacks in this county. (hint: it may help improve the map if you remove duplicate locations, i.e. multiple attacks at the same location.)
+```{r}
+sharks %>% 
+  count(county) %>% 
+  arrange(desc(n))
+```
+```{r}
+top_county_data <- sharks %>% 
+  filter(county == "San Diego") 
+```
+```{r}
+top_county_data %>% 
+  summary()
+```
+```{r}
+lon_min <- -118.1
+lon_max <- -117.1
+lat_min <- 32.59
+lat_max <- 33.37
+```
+```{r}
+lat <- c(lat_min, lat_max)
+lon <- c(lon_min, lon_max)
+  bbox <- make_bbox(lon, lat, f = 0.03)
+```
+```{r}
+map_sharks <- get_stadiamap(bbox, maptype = "stamen_terrain", zoom = 7)
+```
+```{r}
+ggmap(map_sharks) +
+  geom_point(data = top_county_data, aes(longitude, latitude), color = "red") +
+  labs(title = "Shark Incidents in San Diego County")
+```
 
 
 
