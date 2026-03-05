@@ -49,17 +49,18 @@ You will use BLAST, a tool used in real clinical and research microbiology labs,
 ```
 
 ```{r}
-dna_file <- readAAStringSet("data/goi_01.txt")
+
 ```
 
 
 **2.Perform a blastx search using `goi_01.txt` as the query and the "core_nt" database. Download the cluster table results in CSV format, change the name to "goi_01_blastx.csv" and store in the homework/data folder. Read the csv file into R and clean the column names. Save the cleaned data frame as goi_01_blastx.**
 ```{r}
-
+goi_01_blastx <- read_csv("data/goi_01_blastx.csv") %>% 
+  clean_names()
 ```
 
 ```{r}
-
+goi_01_blastx
 ```
 
 **3.Display the top 10 blastx hits, based on e_value, for this blastx search? (Include the Scientific Name, Cluster Anscestor, Cluster Representative Sequence, Max Score, Query Cover, E value and Percent Identity)**
