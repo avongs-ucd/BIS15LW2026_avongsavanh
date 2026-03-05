@@ -93,7 +93,7 @@ There are five main types of BLAST, each designed for a specific combination of 
 7. Check the **Select All** box. Click on Download and select the **Alginment Descrptions CSV**. Download the results in CSV format. Using the command line move the file into your "data/blast_results" folder and rename the file to "genome01_blastn.csv".
 ```{}
 mv genome01_blastn_csv BIS15LW2026_avongsavanh/lab16/data/blast_results/
-ls 
+ls BIS15LW2026_avongsavanh/lab16/data/blast_results/
 ```
 
 
@@ -130,7 +130,7 @@ genome01_blastn %>%
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 
-#BiocManager::install("Biostrings")
+BiocManager::install("Biostrings")
 ```
 
 
@@ -141,32 +141,36 @@ library(Biostrings)
 
 Lets take a look at a dna fasta file
 ```{r}
-
+dna_file <- readDNAStringSet("data/e.coli_genbank.fasta")
 ```
 
 Lets look at the head of the fasta file
 ```{r}
-
+head(dna_file)
+```
+```{r}
+names(dna_file)
 ```
 
 Lets take a look at a amino acid fasta file
 ```{r}
-
+aa_file <- readAAStringSet("data/e.coli_cds.fasta")
 ```
 
 ```{r}
-
+names(aa_file)
 ```
 
 Lets try Protein Blast (blastp). *(use unknown_aminoaacid_sequence.txt as the query and the "RefSeq Protein" `refseq_protein` database, use the blastp Algorithm)*.
-```{r}
-
+```{}
+mv genome01_blastn_csv BIS15LW2026_avongsavanh/lab16/data/blast_results/
+ls BIS15LW2026_avongsavanh/lab16/data/blast_results/
 ```
 
 ## Practice *(if time allows)*
 1.Download the **Description Table** in CSV format, change the name to "blastp_results.csv" using command line and store the results in the "blast_results" folder. What commands did you use to change the name and move the file into the blast_results folder?
-```{}
-
+```{r}
+read_csv("data/blast_results/blastp_results.csv")
 ```
 
 2. Read the csv file into R and clean the column names. Save the cleaned data frame as `blastp_results`.
