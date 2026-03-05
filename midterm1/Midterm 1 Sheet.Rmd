@@ -4047,5 +4047,7 @@ shinyApp(ui, server)
 #shinyApp(ui, server)
 ```
 
-
+for midterm 2 corrections:
+polarbears %>% 
+  count(sex, popn) #do for plot as well so x = year, y = n
 
