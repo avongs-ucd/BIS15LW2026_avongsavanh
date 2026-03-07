@@ -165,7 +165,57 @@ polar_bears %>% #Make a line plot(s) to visualize sampling by year for both popu
        y = "Number of Polar Bears Sampled")
 ```
 
-The error made above was that 
+The error made above was that the line plots did not have lines plotted. The corrected code is below:
+```{r}
+#polar_bears <- polar_bears %>% #same code as before
+#  separate(capture_date, into = c("year", "month", "day"), sep = "-") 
+#polar_bears
+```
+
+```{r}
+polar_bears %>%
+  filter(popn == "SB") %>% 
+  select(year) %>% 
+  count(year) %>% 
+  arrange(desc(n))
+```
+```{r}
+polar_bears %>%
+  filter(popn == "CS") %>% 
+  select(year) %>% 
+  count(year) %>% 
+  arrange(desc(n))
+```
+
+```{r}
+polar_bears %>% 
+  filter(popn == "SB") %>% 
+  mutate(year = as.numeric(year)) %>% 
+  select(year)  %>% 
+  count(year) %>% 
+  ggplot(aes(x = year, y = n)) +
+  geom_line(color = "red") +
+  geom_point(shape = 5) + 
+  theme(axis.text.x = element_text(angle = 60, hjust = 1)) + 
+  labs(title = "Polar Bear Sampling by Year - SB Population",
+      x = "Year",
+       y = "Number of Polar Bears Sampled")
+```
+
+```{r}
+polar_bears %>% 
+  filter(popn == "CS") %>% 
+  mutate(year = as.numeric(year)) %>% 
+  select(year)  %>% 
+  count(year) %>% 
+  ggplot(aes(x = year, y = n)) +
+  geom_line(color = "red") +
+  geom_point(shape = 5) + 
+  theme(axis.text.x = element_text(angle = 60, hjust = 1)) + 
+  labs(title = "Polar Bear Sampling by Year - CS Population",
+      x = "Year",
+       y = "Number of Polar Bears Sampled")
+```
 
 ```{r}
 polar_bears <- polar_bears %>%
@@ -207,9 +257,36 @@ polar_bears %>% #Make a line plot(s) to visualize sampling by year for both popu
        y = "Number of Fasting Polar Bears Sampled")
 ```
 
-The error made above was that 
+The error made above was that the line plots did not have lines plotted. The corrected code is below:
+```{r}
+polar_bears %>% #Make a line plot(s) to visualize sampling by year for both populations.
+  filter(popn == "SB", fasting == "yes") %>% 
+  mutate(year = as.numeric(year)) %>% 
+  select(year) %>% 
+  count(year) %>% 
+  ggplot(aes(x = year, y = n)) +
+  geom_line(color = "red") +
+  geom_point(shape = 5) + 
+  theme(axis.text.x = element_text(angle = 60, hjust = 1)) + 
+  labs(title = "Fasting Polar Bear Sampling by Year - SB Population",
+      x = "Year",
+       y = "Number of Fasting Polar Bears Sampled")
+```
 
-
+```{r}
+polar_bears %>% #Make a line plot(s) to visualize sampling by year for both populations.
+  filter(popn == "CS", fasting == "yes") %>% 
+  mutate(year = as.numeric(year)) %>% 
+  select(year) %>% 
+  count(year) %>% 
+  ggplot(aes(x = year, y = n)) +
+  geom_line(color = "red") +
+  geom_point(shape = 5) + 
+  theme(axis.text.x = element_text(angle = 60, hjust = 1)) + 
+  labs(title = "Fasting Polar Bear Sampling by Year - CS Population",
+      x = "Year",
+       y = "Number of Fasting Polar Bears Sampled")
+```
 
 ## Submit the Midterm
 1. Save your work and knit the .rmd file.  
