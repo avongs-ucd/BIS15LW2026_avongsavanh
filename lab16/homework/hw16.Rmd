@@ -1,5 +1,5 @@
 ---
-title: "Homework YY"
+title: "Homework 16"
 author: "Alan Vongsavanh"
 date: "`r Sys.Date()`"
 output:
@@ -60,57 +60,75 @@ goi_01_blastx
 
 **3.Display the top 10 blastx hits, based on e_value, for this blastx search? (Include the Scientific Name, Cluster Anscestor, Cluster Representative Sequence, Max Score, Query Cover, E value and Percent Identity)**
 ```{r}
-goi_01_blastx %>% 
+top10_blastx <- goi_01_blastx %>% 
   slice_min(e_value, n = 10) %>% 
   select(scientific_name, cluster_ancestor, representative_sequence, max_score, query_cover, e_value, per_ident)
+top10_blastx
 ```
- 
 
 **4. create a plot that shows the different in percent identity for each Scientific Name of the top 10 blastx hits. Make sure to label your axes and give your plot a title.**
 ```{r}
-
+top10_blastx %>% 
+  ggplot(aes(x = scientific_name, y = per_ident, fill = scientific_name)) +
+  geom_col() +
+  coord_flip() +
+  labs(title = "Percent Identity of Top 10 Blastx Hits",
+       x = "Scientific Name",
+       y = "Percent Identity (%)") +
+  theme_minimal() +
+  theme(legend.position = "none")
 ```
 
 
 **5 Perform a blastn search using `goi_01.txt` as the query and the "core_nt" database. Download the alignment description in CSV format, change the name to "goi_01_blastn.csv" and store in the homework/data folder. Read the csv file into R and clean the column names. Save the cleaned data frame as goi_01_blastn.**
 ```{r}
-
+goi_01_blastn <- read_csv("data/goi_01_blastn.csv") %>% 
+  clean_names()
 ```
 
 ```{r}
-
+goi_01_blastn
 ```
 
 **6. What was the top blastn hit, based on e_value, for this blastn search? (Include the Cluster Ancestor, Cluster, Representative Sequence, Max Score, Query Cover, E value, Percent Identity and Accession Link)**
 ```{r}
-
+top1_blastn <- goi_01_blastn %>% 
+  slice_min(e_value, n = 1) #%>% 
+top1_blastn
+```
+```{r}
+goi_01_blastx %>%
+  filter(scientific_name == "Yersinia pestis") %>% #from blastn data, Yersinia pestis species was the top hit
+  slice_max(e_value, n = 1) %>% 
+  select(cluster_ancestor, cluster_composition, representative_sequence, max_score, query_cover, e_value, per_ident, accession)
 ```
 
 **7. Based on the blastx and blastn results, what do you think this gene is and what bacteria do you think it came from?**
 ```{}
-
+This gene is the minor capsid protein, and the bacteria that this gene came from is the Yersinia pestis as showcased by its mention.
 ```
 
 **8. For the top blastn hit, click on the accession link for this bacteria and download the coding sequences as a FASTA Protein file. Read the fasta file into R using the Biostrings package and store it in an object called `goi_blastn_hit`.**
 ```{r}
-
+goi_blastn_hit <- readAAStringSet("data/sequence.fasta")
 ```
 
 ```{r}
-
+goi_blastn_hit
 ```
 
 **9. From the same organism, identify 5 other annotated genes? Do these genes suggest about the biology or virulence of this bacterium?** *Annotated genes can be found in the "CDS" section of the GenBank file. You can also find genes by going to summary page for the organism and looking at the "View annotated genes" section.*
 ```{r}
-
+genes <- read_tsv("data/ncbi_dataset.tsv") %>% 
+  clean_names
+genes
 ```
-
+These genes suggest that this bacterium is related to toxin delivery, secretion, and/or transport, affecting other cells to maintain its own survival. 
 
 **10. Now that you have an idea of this bacteria's identity, what illness/disease do you think the patient has? What is the historical or public health significance of this disease? Based on the gene you identified, what role might this gene play in pathogenicity?**
 ```{}
-
+I think the patient has the Plague, as there are ties to this disease from the bacterium that the patient has. This disease has historically decimated the human population in the past before with an immense mortality rate, and was an immnense health concern. This gene alone probably works to spread toxins and other genes across the body to spread the influence of the virus/bacterium. 
 ```
-
 
 ## Knit and Upload
 Please knit your work as an .html file and upload to Canvas. Homework is due before the start of the next lab. No late work is accepted. Make sure to use the formatting conventions of RMarkdown to make your report neat and clean! 

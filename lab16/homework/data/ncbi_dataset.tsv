@@ -1,0 +1,11 @@
+Accession	Begin	End	Chromosome	Orientation	Name	Symbol	Gene ID	Gene Type	Transcripts accession	Protein accession	Protein length	Locus tag
+NZ_ADQO01000001.1	77	568		minus	Hcp family type VI secretion system effector		0	protein-coding		WP_002210014.1	163	DW00_RS20705
+NZ_ADQO01000001.1	572	2308		minus	OmpA family protein		0	protein-coding		WP_011192992.1	578	DW00_RS20700
+NZ_ADQO01000001.1	2308	2994		minus	type VI secretion system protein TssL, short form	tssL	0	protein-coding		WP_016595073.1	228	DW00_RS20695
+NZ_ADQO01000001.1	2991	3164		minus	type VI secretion system baseplate subunit TssK	tssK	0	protein-coding		WP_002363164.1	57	DW00_RS23795
+NZ_ADQO01000002.1	934	1599		minus	ABC transporter ATP-binding protein		0	protein-coding		WP_002212226.1	221	DW00_RS20690
+NZ_ADQO01000004.1	66	1763		minus	C4-dicarboxylic acid transporter DauA	dauA	0	protein-coding		WP_002224472.1	565	DW00_RS20680
+NZ_ADQO01000005.1	114	1172		minus	glycoside hydrolase family 88/105 protein		0	protein-coding		WP_002209884.1	352	DW00_RS20675
+NZ_ADQO01000005.1	1188	1375		minus	SDR family oxidoreductase		0	protein-coding		WP_038932593.1	61	DW00_RS0120720
+NZ_ADQO01000006.1	554	1729		plus	voltage-gated potassium channel protein	kch	0	protein-coding		WP_002212236.1	391	DW00_RS20670
+NZ_ADQO01000006.1	1827	2231		minus	fluoride efflux transporter CrcB	crcB	0	protein-coding		WP_002212237.1	134	DW00_RS20665
